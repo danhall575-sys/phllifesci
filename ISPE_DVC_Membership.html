@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISPE DVC — Membership Committee Master Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: #F4F6FA;
+    color: #1C1F2E;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { height: 4px; width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #B8C4D8; border-radius: 4px; }
+  button { font-family: 'DM Sans', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const B = {
+  navy:    "#0F2A52",
+  blue:    "#1B4DB8",
+  lblue:   "#EBF0FB",
+  sky:     "#3A7BD5",
+  gold:    "#B8860B",
+  lgold:   "#FDF8EE",
+  green:   "#2E7D32",
+  lgreen:  "#F0F7F0",
+  orange:  "#C84B00",
+  lorange: "#FFF4EE",
+  red:     "#C8202F",
+};
+
+const N = {
+  bg:      "#F4F6FA",
+  surface: "#FFFFFF",
+  stone:   "#E2E8F4",
+  ink:     "#1C1F2E",
+  mid:     "#3D4560",
+  muted:   "#7280A0",
+  ghost:   "#EDF0F8",
+};
+
+const TABS = [
+  {id:"overview",   label:"Overview",       dot:B.blue},
+  {id:"roadmap",    label:"Roadmap",        dot:B.green},
+  {id:"roles",      label:"Roles",          dot:B.sky},
+  {id:"el",         label:"Emerging Leaders", dot:B.gold},
+  {id:"cadence",    label:"Cadence",        dot:B.green},
+  {id:"metrics",    label:"Metrics",        dot:B.blue},
+  {id:"asks",       label:"Corporate Asks", dot:B.orange},
+];
+
+const Dot = ({color}) => (
+  <span style={{display:"inline-block",width:8,height:8,
+    borderRadius:"50%",background:color,flexShrink:0}}/>
+);
+
+const Mark = ({color, children}) => (
+  <span style={{
+    display:"inline-flex", alignItems:"center", gap:5,
+    background: color + "18",
+    color: color,
+    border: `1px solid ${color}40`,
+    borderRadius:4, padding:"2px 9px",
+    fontSize:11, fontWeight:600, letterSpacing:"0.3px",
+    whiteSpace:"nowrap",
+  }}>{children}</span>
+);
+
+const Rule = ({color}) => (
+  <div style={{height:2, background:color||N.stone, borderRadius:1,
+    margin:"10px 0 18px", width:36}}/>
+);
+
+const Display = ({children, style={}}) => (
+  <h2 style={{
+    fontFamily:"'DM Serif Display', Georgia, serif",
+    fontSize:26, fontWeight:400, color:N.ink,
+    letterSpacing:"-0.3px", lineHeight:1.2, ...style
+  }}>{children}</h2>
+);
+
+const Sub = ({children, style={}}) => (
+  <p style={{fontSize:12, fontWeight:600, color:N.muted,
+    textTransform:"uppercase", letterSpacing:"1.2px", ...style}}>
+    {children}
+  </p>
+);
+
+const Card = ({children, style={}, color}) => (
+  <div style={{
+    background:N.surface, border:`1px solid ${N.stone}`,
+    borderRadius:10, padding:"20px 22px",
+    borderLeft: color ? `3px solid ${color}` : undefined,
+    ...style,
+  }}>{children}</div>
+);
+
+const SectionHead = ({children, accent=B.blue}) => (
+  <div style={{marginBottom:20}}>
+    <Rule color={accent}/>
+    <Display>{children}</Display>
+  </div>
+);
+
+const Tbl = ({headers, rows}) => (
+  <div style={{overflowX:"auto", borderRadius:8, border:`1px solid ${N.stone}`}}>
+    <table style={{width:"100%", borderCollapse:"collapse", fontSize:12}}>
+      <thead>
+        <tr>{headers.map((h,i) => (
+          <th key={i} style={{
+            background:B.navy, color:"#fff",
+            padding:"9px 13px", textAlign:"left",
+            fontWeight:600, fontSize:11,
+            textTransform:"uppercase", letterSpacing:"0.7px",
+            whiteSpace:"nowrap",
+          }}>{h}</th>
+        ))}</tr>
+      </thead>
+      <tbody>{rows.map((row,i) => (
+        <tr key={i} style={{background:i%2===0?N.surface:N.ghost}}>
+          {row.map((cell,j) => (
+            <td key={j} style={{
+              padding:"8px 13px", borderBottom:`1px solid ${N.stone}`,
+              verticalAlign:"top", lineHeight:1.55, color:N.mid, fontSize:12,
+            }}>{cell}</td>
+          ))}
+        </tr>
+      ))}</tbody>
+    </table>
+  </div>
+);
+
+const Phase = ({num, days, color, headline, actions, owner, success, obstacle, workaround}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{marginBottom:12, border:`1px solid ${N.stone}`, borderRadius:10, overflow:"hidden"}}>
+      <button onClick={()=>setOpen(!open)} style={{
+        width:"100%", background:open?N.surface:N.ghost,
+        border:"none", padding:"16px 20px", cursor:"pointer",
+        display:"flex", justifyContent:"space-between", alignItems:"center",
+        textAlign:"left", transition:"background 0.15s",
+      }}>
+        <div style={{display:"flex", alignItems:"center", gap:14}}>
+          <div style={{
+            width:36, height:36, borderRadius:"50%",
+            background:color, flexShrink:0,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontFamily:"'DM Serif Display',serif",
+            color:"#fff", fontSize:17,
+          }}>{num}</div>
+          <div>
+            <div style={{fontSize:11, fontWeight:600, color:N.muted,
+              letterSpacing:"0.8px", textTransform:"uppercase", marginBottom:2}}>{days}</div>
+            <div style={{fontSize:15, fontWeight:600, color:N.ink}}>{headline}</div>
+          </div>
+        </div>
+        <span style={{fontSize:18, color:N.muted, userSelect:"none", marginLeft:12}}>
+          {open?"−":"+"}
+        </span>
+      </button>
+      {open && (
+        <div style={{padding:"20px", background:N.surface, borderTop:`1px solid ${N.stone}`}}>
+          <div style={{display:"grid", gridTemplateColumns:"3fr 2fr", gap:20}}>
+            <div>
+              <Sub style={{marginBottom:10}}>Priority Actions</Sub>
+              {actions.map((a,i) => (
+                <div key={i} style={{display:"flex", gap:10, marginBottom:9}}>
+                  <span style={{
+                    color:"#fff", background:color, borderRadius:"50%",
+                    width:20, height:20, minWidth:20,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    fontSize:10, fontWeight:700, flexShrink:0, marginTop:1,
+                  }}>{i+1}</span>
+                  <span style={{fontSize:13, color:N.mid, lineHeight:1.55}}>{a}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{display:"flex", flexDirection:"column", gap:8}}>
+              {[
+                {l:"Owner",              v:owner,      bg:N.ghost,     tc:N.mid},
+                {l:"Success Signal",     v:success,    bg:B.lgreen,    tc:B.green},
+                {l:"Likely Obstacle",    v:obstacle,   bg:B.lorange,   tc:B.orange},
+                {l:"Workaround",         v:workaround, bg:B.lblue,     tc:B.blue},
+              ].map((item,i)=>(
+                <div key={i} style={{background:item.bg,borderRadius:8,padding:"9px 12px"}}>
+                  <div style={{fontSize:10,fontWeight:700,color:item.tc,textTransform:"uppercase",letterSpacing:"0.8px",marginBottom:3}}>{item.l}</div>
+                  <div style={{fontSize:12,color:N.ink,lineHeight:1.5}}>{item.val || item.v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+function App() {
+  const [tab, setTab] = useState("overview");
+
+  return (
+    <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",color:N.ink,minHeight:"100vh",background:N.bg}}>
+
+      {/* Header */}
+      <div style={{background:B.navy,padding:"28px 28px 0"}}>
+        <div style={{maxWidth:980,margin:"0 auto"}}>
+          <div style={{color:"rgba(255,255,255,0.5)",fontWeight:600,fontSize:11,letterSpacing:"2px",textTransform:"uppercase",marginBottom:6}}>
+            ISPE Delaware Valley Chapter · Membership Committee
+          </div>
+          <h1 style={{
+            fontFamily:"'DM Serif Display',Georgia,serif",
+            color:"#fff", fontSize:32, fontWeight:400,
+            lineHeight:1.2, margin:"0 0 6px",letterSpacing:"-0.3px"
+          }}>90-Day Engagement Master Plan</h1>
+          <div style={{color:"rgba(255,255,255,0.45)",fontSize:12,marginBottom:16}}>
+            Engagement-First Rebuild · Q1–Q2 2026 · Dan Hall, Anthony Cicamore, Liah Osborne, Emily Kate Simard
+          </div>
+          <div style={{
+            background:"rgba(27,77,184,0.35)",
+            border:"1px solid rgba(27,77,184,0.5)",
+            borderRadius:8, padding:"10px 16px",
+            fontSize:13, color:"rgba(255,255,255,0.85)",
+            marginBottom:0, lineHeight:1.7,
+          }}>
+            <span style={{fontWeight:700,color:"#fff"}}>North Star: </span>
+            Membership follows belonging. Belonging follows engagement. Engagement follows promotion. We build the room first — membership follows naturally.
+          </div>
+          {/* Tabs */}
+          <div style={{display:"flex",gap:0,marginTop:20,overflowX:"auto"}}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{
+                background: tab===t.id ? N.bg : "transparent",
+                color: tab===t.id ? N.ink : "rgba(255,255,255,0.5)",
+                border:"none", borderRadius:"8px 8px 0 0",
+                padding:"10px 18px",
+                fontWeight: tab===t.id ? 600 : 400,
+                fontSize:13, cursor:"pointer",
+                whiteSpace:"nowrap",
+                display:"flex", alignItems:"center", gap:7,
+                transition:"all 0.15s",
+              }}>
+                <Dot color={tab===t.id ? t.dot : "rgba(255,255,255,0.3)"}/>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{maxWidth:980,margin:"0 auto",padding:"28px 16px 60px"}}>
+
+        {/* OVERVIEW */}
+        {tab==="overview" && (
+          <div>
+            <SectionHead>Where We Stand</SectionHead>
+
+            <Card style={{marginBottom:16}}>
+              <Sub style={{marginBottom:12}}>Current Situation</Sub>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+                {[
+                  {label:"Membership Trend", desc:"Membership has declined significantly in recent years. Rebuilding requires getting people back in rooms first, not chasing renewals.", color:B.orange},
+                  {label:"End-User Presence", desc:"End-user and owner/operator representation at events is critically low. We need their voices in the room as attendees, speakers, and hosts.", color:B.sky},
+                  {label:"Upcoming Anchors", desc:"Three strong flagship events ahead: EL Role-Playing Event (Mar 20), Bioprocessing Program (Apr 9), Golf Outing (May 4). These are our campaign targets.", color:B.green},
+                ].map((s,i)=>(
+                  <div key={i} style={{background:N.ghost,borderRadius:8,padding:"14px 16px",borderTop:`3px solid ${s.color}`}}>
+                    <div style={{fontSize:12,fontWeight:700,color:N.ink,marginBottom:6}}>{s.label}</div>
+                    <div style={{fontSize:12,color:N.muted,lineHeight:1.65}}>{s.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              <Card color={B.green}>
+                <Sub style={{marginBottom:10,color:B.green}}>What's Working</Sub>
+                {[
+                  "Strong historical chapter reputation — ISPE DVC is a known name in the region",
+                  "Long-standing board relationships and warm connections across the industry",
+                  "Strong contact lists and well-connected team members across firms and functions",
+                  "Access to venues — Philadelphia-area pharma infrastructure is growing",
+                  "Regional pharma investment is accelerating — we can attach to that momentum",
+                  "EL pricing structure exists nationally: $46.80 EL member ticket, $15.30 virtual",
+                  "Flagship events with real brand equity: Golf Outing, Symposium, Annual Gala",
+                ].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:6,display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{color:B.green,fontWeight:700,flexShrink:0}}>✓</span>
+                    <span style={{color:N.mid,lineHeight:1.55}}>{x}</span>
+                  </div>
+                ))}
+              </Card>
+              <Card color={B.orange}>
+                <Sub style={{marginBottom:10,color:B.orange}}>What Isn't Working</Sub>
+                {[
+                  "No clear end-user champion in the region — we lack that anchor company or contact",
+                  "Distribution relies on posting and emails that often go unseen",
+                  "60–70% of registrations happen in the final 48 hours — no early momentum",
+                  "No structured post-event follow-up loop of any kind",
+                  "Emerging leader pipeline completely untapped despite favorable pricing",
+                  "Expired members are not being contacted — no outreach or re-engagement channel",
+                  "No data tracking: attendance trends, first-timers, repeat visitors — none of it",
+                ].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:6,display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{color:B.orange,fontWeight:700,flexShrink:0}}>✗</span>
+                    <span style={{color:N.mid,lineHeight:1.55}}>{x}</span>
+                  </div>
+                ))}
+              </Card>
+            </div>
+
+            <Card style={{marginBottom:16}}>
+              <Sub style={{marginBottom:12}}>90-Day Success Criteria</Sub>
+              <Tbl headers={["Metric","Target by Day 90","Why It Matters"]} rows={[
+                ["Total Event Attendance",        "Trending up event-over-event",            "The chapter lives and dies on bodies in the room"],
+                ["First-Time Attendees",          "Track consistently — grow quarter-over-quarter", "New faces = new revenue, new relationships, future members"],
+                ["End-User Org Representation",   "Meaningfully higher than today",          "End-user presence is the missing ingredient for relevance"],
+                ["EL Attendees per Event",        "5+ per event by Day 60",                  "Lowest cost to acquire, highest long-term value"],
+                ["Repeat Attendees (rolling)",    "Establish baseline, then grow",           "Repeat attendance = real belonging, not one-time curiosity"],
+                ["Corporate Conversations",       "10+ warm outreach conversations logged",  "Relationship pipeline that unlocks internal distribution"],
+              ]}/>
+            </Card>
+
+            <Card style={{background:B.lblue,border:`1px solid ${B.blue}30`}}>
+              <Sub style={{marginBottom:8,color:B.blue}}>The Strategy in Plain Terms</Sub>
+              <p style={{fontSize:13,marginBottom:10,color:N.ink,lineHeight:1.75}}>Every tactic in this plan does one of two things: it puts more people in the room, or it makes the people already in the room more likely to come back and eventually join. <strong>That is the membership strategy.</strong></p>
+              <p style={{fontSize:13,color:N.mid,lineHeight:1.75}}>We're not chasing renewals or cold-pitching memberships. We're building the kind of community that makes membership feel obvious — because the value is already there, visible, and real. When people belong, they join. Our job is to make them belong first.</p>
+            </Card>
+          </div>
+        )}
+
+        {/* ROADMAP */}
+        {tab==="roadmap" && (
+          <div>
+            <SectionHead>90-Day Roadmap</SectionHead>
+            <p style={{fontSize:13,color:N.muted,marginBottom:20}}>Click each phase to expand full actions, owners, and success signals.</p>
+
+            <Phase num="1" days="Days 1–30" color={B.blue}
+              headline="Build the operating foundation. Nothing executes without rails."
+              actions={[
+                "Set up a shared digital workspace to centralize team coordination and replace scattered file dependency",
+                "Assign and confirm 4 roles in writing — names to functions, flat structure, no hierarchy beyond coordination",
+                "Build the corporate outreach target list: active board members and their employers, chapter sponsors, past presidents, known end-user contacts — organized by warmth",
+                "Draft the one-page Corporate Ask Sheet: EL mission, pricing, escalating ask tiers, what's in it for them",
+                "Identify the next 2–3 events on Ticket Tailor as named campaign anchors — every action ties to one of them",
+                "Design the attendance tracking approach: what data do we need, where does it live, who pulls it after each event",
+                "Draft the 72-hour post-event follow-up template — 3 sentences, one question, sent from a real person",
+                "Set a recurring biweekly team check-in — same day, same time, low lift, no agenda theater",
+                "First handoff to Programming/Marketing: share 3 topic signals we're hearing and 2 names of people who'd say yes to speaking",
+                "Get visibility into Ticket Tailor — ensure all 4 team members can view the event pages and registration data",
+              ]}
+              owner="Dan Hall (Co-Chair) + full team alignment"
+              success="Shared workspace is live, roles are confirmed, target list exists with warmth ratings, next event is the named campaign anchor, tracking approach is decided"
+              obstacle="Volunteer inertia in week one — people agree to roles but the first small step doesn't happen"
+              workaround="Assign specific, tiny outputs with a named date. Not 'own the tracker' — 'add 5 company names to the Notion doc by Thursday.' Small first steps create momentum."
+            />
+
+            <Phase num="2" days="Days 31–60" color={B.sky}
+              headline="Launch the corporate outreach engine. Run the first complete event cycle."
+              actions={[
+                "Begin warm outreach to corporate contacts — always lead with Tier 1 ask (name someone internal who can champion ISPE to early-career staff)",
+                "Secure first internal distribution channel: one company agrees to forward an event invite through internal email, Teams, or Slack",
+                "Run the first full 72-hour post-event follow-up — log every response theme in the shared workspace",
+                "Identify at least one end-user willing to speak, moderate, or be featured at a future event — pass that name to Programming",
+                "Build the LinkedIn amplification pack for the next event: 3 short pre-written posts and a board repost prompt (copy-paste ready, no creative work required from board members)",
+                "Work with Marketing to push event promotion earlier — advocate for the registration page to go live further out so reach has more runway",
+                "Review first round of attendance data with the team — what moved, what didn't, what do we do differently",
+                "Report back to Programming committee: here's what we heard, here are names, here's what the market is asking for",
+                "Identify one company that could host a future EL happy hour — make the initial ask",
+                "Begin building the expired member re-engagement approach — identify the list, design the outreach",
+              ]}
+              owner="All four — EL/Corporate outreach led by Liah + Anthony, distribution led by Emily Kate"
+              success="3+ corporate conversations completed, 1 internal distribution channel secured, first follow-up loop done and logged, EL attendees tracked for the first time at an event"
+              obstacle="Corporate contacts are warm but slow — they intend to help but it doesn't happen without a specific ask"
+              workaround="Make every ask take 5 minutes to fulfill. 'Can you forward this to your team?' gets done. 'Can we plan a happy hour?' gets scheduled for next quarter."
+            />
+
+            <Phase num="3" days="Days 61–90" color={B.green}
+              headline="Prove the model. Deliver visible results. Set up the next 90 days."
+              actions={[
+                "Host or co-host first EL happy hour at a corporate partner location — even an informal 60-min gathering counts",
+                "Have at least one end-user voice featured at a chapter event (speaker, panelist, or moderator)",
+                "Have 2+ companies forwarding event invites through their internal channels",
+                "Run second post-event follow-up cycle — compare themes to round one, flag anything that's repeating",
+                "Produce a simple one-page summary for the board: attendance trends, EL count, end-user presence, corporate conversations, what's next",
+                "Begin Symposium activation: EL and end-user outreach push, internal distribution through secured channels",
+                "Present committee prospectus framework to board — activities, time commitment, expectations for each committee",
+                "Propose a text-based reminder system to board for events and membership renewals — bring a specific tool recommendation and cost",
+                "Propose AV emergency kit to board as a single low-cost budget line item",
+                "Define what the next 90 days look like — hand the team a version 2 of this plan",
+              ]}
+              owner="All four — Dan coordinates and produces the board summary"
+              success="Attendance trend is visible and positive, EL attendees tracked and growing, at least one corporate distribution win, board has seen a metrics update with real numbers"
+              obstacle="Month 3 energy drop — the work feels routine and wins feel slow"
+              workaround="Name wins explicitly and often. One new company forwarding your event invite is a win. One EL attendee who came back is a win. Make the team see progress."
+            />
+
+            <Card style={{background:B.lblue, border:`1px solid ${B.blue}30`, marginTop:4}}>
+              <Sub style={{marginBottom:8,color:B.blue}}>The Anchor Principle</Sub>
+              <p style={{fontSize:13,color:N.ink,lineHeight:1.75}}>Every phase connects to <strong>a real event on the calendar</strong>. We don't run abstract campaigns — we build the room for the next event, and we learn from the last one. We don't control programming or speakers. What we control is promotion, distribution, relationship-building, and follow-up. That's the lane. Everything in this plan lives in that lane.</p>
+            </Card>
+          </div>
+        )}
+
+        {/* ROLES */}
+        {tab==="roles" && (
+          <div>
+            <SectionHead>Team — 4 Roles, Flat Structure</SectionHead>
+            <p style={{fontSize:13,color:N.muted,marginBottom:20}}>No hierarchy. No reporting up. Coordination happens laterally. Dan holds the architecture; everyone owns their lane.</p>
+
+            <Card style={{background:B.lblue,border:`1px solid ${B.blue}30`,marginBottom:20}}>
+              <Sub style={{marginBottom:12,color:B.blue}}>The Team</Sub>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+                {[
+                  {name:"Dan Hall",          role:"Co-Chair / Ops & Strategy",  note:"Architects the system, owns the workspace, coordinates across all committees",                          color:B.blue},
+                  {name:"Anthony Cicamore",  role:"Corporate Outreach",          note:"BD background at Burns & McDonnell — owns corporate relationship pipeline and warm outreach",           color:B.green},
+                  {name:"Liah Osborne",      role:"Distribution & Content",      note:"Background in public relations — owns LinkedIn content, follow-up messaging, and amplification packs",   color:B.sky},
+                  {name:"Emily Kate Simard", role:"EL Activation",               note:"Early-career mechanical engineer at CRB — peer-to-peer EL outreach, happy hour coordination, EL tracking", color:B.gold},
+                ].map((p,i)=>(
+                  <div key={i} style={{background:N.surface,borderRadius:8,padding:"14px",borderTop:`3px solid ${p.color}`}}>
+                    <div style={{fontWeight:700,color:N.ink,fontSize:13,marginBottom:2}}>{p.name}</div>
+                    <div style={{fontSize:11,fontWeight:600,color:p.color,margin:"3px 0 8px",textTransform:"uppercase",letterSpacing:"0.5px"}}>{p.role}</div>
+                    <div style={{fontSize:11,color:N.muted,lineHeight:1.55}}>{p.note}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {[
+              { name:"Dan Hall", title:"Co-Chair · Ops & Strategy", color:B.blue,
+                core:["Own and maintain the shared workspace (Notion or equivalent)","Maintain attendance and engagement tracking after every event","Serve as liaison to Programming, Marketing, and Sponsorship committees","Own the topic/speaker demand log — feed inputs to Programming regularly","Coordinate the team's biweekly rhythm and make sure nothing falls through","Produce the monthly metrics summary for the board"],
+                weekly:["Update workspace and flag deadlines","Log any new speaker or topic demand signals","Check in with each team member on what they're working on","Prep any committee coordination needed"],
+                cycle:["Advocate for MAC forms and event pages to go live earlier","Ensure all 4 members have Ticket Tailor visibility before each event","T+24hrs: Pull and log attendance data","T+1wk: Review follow-up responses, feed Programming"],
+                owns:"Team workspace · Metrics · Committee coordination · Board reporting",
+                supports:"Everyone — this role is the connective tissue" },
+              { name:"Anthony Cicamore", title:"Corporate Outreach Lead", color:B.green,
+                core:["Own the corporate target list and conversation tracker","Lead warm outreach to industry contacts — board employers, sponsors, past presidents","Escalate asks tier by tier: from 'name a champion' to 'host our event'","Identify and cultivate end-user relationships","Work with Liah on EL happy hour logistics once a host company is identified","Track all conversations and commitments in the shared workspace"],
+                weekly:["Log any new conversations same day","Follow up on open conversations with a specific next ask","Identify 1–2 new target contacts from network","Report pipeline status at team check-in"],
+                cycle:["T-6wks: Send event info to all warm corporate contacts","T-3wks: Confirm whether any will distribute internally","T-1wk: Personal nudge to key contacts","Day-of: Greet any corporate attendees, make introductions"],
+                owns:"Corporate relationship tracker · Warm outreach pipeline · End-user cultivation",
+                supports:"Liah on happy hour logistics · Dan on target list strategy" },
+              { name:"Liah Osborne", title:"Distribution & Content Lead", color:B.sky,
+                core:["Own the LinkedIn amplification pack for each event (3 pre-written posts and board repost prompt)","Write and send the 72-hour post-event follow-up messages","Maintain and update the internal distribution channel map","Coordinate with chapter Marketing on timing and assets","Draft copy for targeted EL outreach messages — PR background informs voice and framing"],
+                weekly:["Check performance on recent LinkedIn posts","Draft event content 3 weeks before each event","Send board repost prompts at T-2wks and T-1wk"],
+                cycle:["T-4wks: Event content drafted, LinkedIn series begins","T-2wks: Board repost prompt distributed","T-1wk: Final push — urgency framing, EL pricing callout","T+72hrs: Post-event follow-up sent to new and EL attendees"],
+                owns:"LinkedIn calendar · Board amplification · Post-event messaging",
+                supports:"Dan on metrics reporting · Emily Kate on EL-targeted copy" },
+              { name:"Emily Kate Simard", title:"EL Activation Lead", color:B.gold,
+                core:["Own peer-to-peer EL outreach — she IS the target audience, use that authentically","Track EL attendees at every event — greet them personally, make introductions","Coordinate EL happy hours once a corporate host is identified","Represent the EL perspective in team planning and content decisions","Build a small personal EL network that channels people toward ISPE events"],
+                weekly:["Log EL conversations and connections","Follow up personally with EL contacts after events","Identify early-career people in her network who haven't attended yet"],
+                cycle:["T-2wks: Personal outreach to EL contacts about the upcoming event","Day-of: Greet and introduce EL attendees, capture names","T+72hrs: Personal follow-up to anyone new she met"],
+                owns:"EL attendance tracking · Peer outreach · Happy hour coordination",
+                supports:"Anthony on corporate EL asks · Liah on EL-targeted content" },
+            ].map((role,i)=>(
+              <Card key={i} style={{borderTop:`4px solid ${role.color}`,marginBottom:14}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                  <Dot color={role.color}/>
+                  <h3 style={{margin:0,color:N.ink,fontSize:15,fontFamily:"'DM Serif Display',serif",fontWeight:400}}>{role.name}</h3>
+                  <Mark color={role.color}>{role.title}</Mark>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                  <div>
+                    <Sub style={{marginBottom:8}}>Core Responsibilities</Sub>
+                    {role.core.map((r,j)=>(
+                      <div key={j} style={{fontSize:12,marginBottom:6,paddingLeft:10,borderLeft:`2px solid ${role.color}`,lineHeight:1.55,color:N.mid}}>{r}</div>
+                    ))}
+                  </div>
+                  <div>
+                    <Sub style={{marginBottom:8}}>Rhythm & Event Cycle</Sub>
+                    {role.weekly.map((w,j)=>(
+                      <div key={j} style={{fontSize:12,marginBottom:5,display:"flex",gap:6,color:N.mid}}>
+                        <span style={{color:role.color,fontWeight:700}}>·</span>{w}
+                      </div>
+                    ))}
+                    <div style={{height:8}}/>
+                    {role.cycle.map((e,j)=>(
+                      <div key={j} style={{fontSize:12,marginBottom:5,display:"flex",gap:6,color:N.mid}}>
+                        <span style={{color:role.color,fontWeight:700}}>›</span>{e}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}>
+                  <Mark color={B.blue}>Owns: {role.owns}</Mark>
+                  <Mark color={N.muted}>Supports: {role.supports}</Mark>
+                </div>
+              </Card>
+            ))}
+
+            <Card style={{background:B.lblue,border:`1px solid ${B.blue}30`}}>
+              <Sub style={{marginBottom:10,color:B.blue}}>Handoff Chain — Every Event Cycle</Sub>
+              <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",fontSize:12}}>
+                <Mark color={B.blue}>Dan sets calendar + anchors</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.sky}>Liah launches content</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.green}>Anthony activates corporate contacts</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.gold}>Emily Kate works EL outreach</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.blue}>Dan captures data</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.sky}>Liah sends follow-up</Mark><span style={{color:N.muted}}>→</span>
+                <Mark color={B.blue}>Dan feeds Programming</Mark>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* EMERGING LEADERS */}
+        {tab==="el" && (
+          <div>
+            <SectionHead>Emerging Leaders Strategy</SectionHead>
+
+            <Card style={{background:B.navy,marginBottom:16}}>
+              <Sub style={{marginBottom:8,color:"rgba(255,255,255,0.5)"}}>The EL Committee Mission</Sub>
+              <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",lineHeight:1.85,fontStyle:"italic",fontFamily:"'DM Serif Display',serif",fontSize:16,fontWeight:400}}>
+                "The mission of the Emerging Leaders Committee is to create and foster a vibrant community for professionals entering the Pharma industry. By working with seasoned professionals from across the industry, we are uniquely positioned to empower the next generation of leaders by providing them with the educational resources, mentorship, and networking opportunities they need to excel."
+              </p>
+            </Card>
+
+            <Card style={{background:B.lblue,border:`1px solid ${B.blue}30`,marginBottom:16}}>
+              <Sub style={{marginBottom:14,color:B.blue}}>Why EL Is the Smartest Place to Start</Sub>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:14}}>
+                {[
+                  {v:"$46.80",  l:"EL Member Event Ticket",    n:"vs. $72.80 member / $93.60 non-member"},
+                  {v:"$15.30",  l:"EL Virtual Ticket",          n:"Lowest possible barrier to entry"},
+                  {v:"$121/yr", l:"Recent Grad Membership",     n:"vs. $299/yr industry — 60% less"},
+                ].map((s,i)=>(
+                  <div key={i} style={{textAlign:"center",background:N.surface,borderRadius:8,padding:"14px 10px"}}>
+                    <div style={{fontSize:26,fontFamily:"'DM Serif Display',serif",color:B.blue,marginBottom:4}}>{s.v}</div>
+                    <div style={{fontSize:11,fontWeight:700,color:N.ink,margin:"3px 0"}}>{s.l}</div>
+                    <div style={{fontSize:10,color:N.muted,lineHeight:1.5}}>{s.n}</div>
+                  </div>
+                ))}
+              </div>
+              <p style={{fontSize:13,color:N.mid,lineHeight:1.75}}>An emerging leader pays <strong>$46.80</strong> to attend the Symposium in person, or <strong>$15.30</strong> virtually. Annual membership is <strong>$121</strong> — roughly the cost of two event tickets. The ROI argument is real and easy to make. Students attend free. These numbers are the opening of every corporate conversation.</p>
+            </Card>
+
+            <SectionHead accent={B.sky}>The Corporate Ask — Two Audiences, One Conversation</SectionHead>
+            <p style={{fontSize:13,color:N.muted,marginBottom:16}}>When we talk to a company contact, we're often making two parallel asks: one to the company as an institutional supporter, and one on behalf of their early-career staff as future ISPE members. These asks are connected but distinct.</p>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              <Card>
+                <Sub style={{marginBottom:12}}>Asks of the Company (Escalating)</Sub>
+                {[
+                  {tier:"Tier 1", ask:"Name an internal champion — anyone who can amplify ISPE events internally (admin, manager, early-career lead)", effort:"2 minutes"},
+                  {tier:"Tier 2", ask:"Forward an event invite through an internal channel — email, Teams, Slack, whatever they use", effort:"5 minutes"},
+                  {tier:"Tier 3", ask:"Host a 60-minute EL happy hour at your office or a nearby venue — we bring the program", effort:"Scheduling + space"},
+                  {tier:"Tier 4", ask:"Provide a speaker, moderator, or panelist for a chapter event", effort:"Coordination"},
+                  {tier:"Tier 5", ask:"Sponsor EL membership or event tickets for a cohort of early-career staff", effort:"Budget conversation"},
+                ].map((item,i)=>(
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:10,paddingBottom:10,borderBottom:i<4?`1px solid ${N.stone}`:"none"}}>
+                    <Mark color={i<2?B.green:i<4?B.sky:B.orange}>{item.tier}</Mark>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,color:N.ink,lineHeight:1.55}}>{item.ask}</div>
+                      <div style={{fontSize:11,color:N.muted,marginTop:3}}>Effort: {item.effort}</div>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+              <Card>
+                <Sub style={{marginBottom:12}}>Asks of Their Early-Career Staff (Direct)</Sub>
+                {[
+                  {tier:"Step 1", ask:"Come to one event — no commitment, no membership required. Just show up.", effort:"$46.80 or free (EL/student)"},
+                  {tier:"Step 2", ask:"Come back — bring a colleague next time", effort:"Social nudge"},
+                  {tier:"Step 3", ask:"Join as an EL member — $121/year, discounted events all year", effort:"$121 annual"},
+                  {tier:"Step 4", ask:"Get involved — volunteer, present, moderate, help plan", effort:"Time investment"},
+                  {tier:"Step 5", ask:"Become a full member and an industry voice in the chapter", effort:"$299/yr + long-term"},
+                ].map((item,i)=>(
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:10,paddingBottom:10,borderBottom:i<4?`1px solid ${N.stone}`:"none"}}>
+                    <Mark color={i<2?B.green:i<4?B.sky:B.orange}>{item.tier}</Mark>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,color:N.ink,lineHeight:1.55}}>{item.ask}</div>
+                      <div style={{fontSize:11,color:N.muted,marginTop:3}}>{item.effort}</div>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+            </div>
+
+            <Card style={{marginBottom:16}}>
+              <Sub style={{marginBottom:12}}>What to Bring Into Every Corporate Meeting</Sub>
+              {[
+                {l:"The mission",          d:"Start with why ISPE-DVC exists and what the EL committee specifically is trying to do. The mission statement above is the anchor."},
+                {l:"The current picture",  d:"We are rebuilding momentum. We have strong programming, strong connections, and a growing regional market — and we need their help getting early-career talent into the room."},
+                {l:"The pricing",          d:"$46.80 to attend a professional event. $121 to be a full EL member for a year. Students attend free. These numbers do the work for you."},
+                {l:"A specific event",     d:"Always anchor the conversation to something real and near-term. 'We have an event on April 9 at Merck Upper Gwynedd — can we get it in front of your team?'"},
+                {l:"The Ask Sheet",        d:"A one-page leave-behind they can forward internally. What ISPE is, what we're asking for, what's in it for their people. Clean, no fluff."},
+              ].map((item,i)=>(
+                <div key={i} style={{padding:"10px 14px",borderLeft:`3px solid ${B.blue}`,marginBottom:10,background:N.ghost,borderRadius:"0 8px 8px 0"}}>
+                  <div style={{fontWeight:700,fontSize:12,color:N.ink}}>{item.l}</div>
+                  <div style={{fontSize:12,color:N.muted,marginTop:3,lineHeight:1.55}}>{item.d}</div>
+                </div>
+              ))}
+            </Card>
+
+            <Card>
+              <Sub style={{marginBottom:12}}>How to Build the Target Company List</Sub>
+              <p style={{fontSize:13,color:N.muted,marginBottom:14}}>The list should be built collaboratively and organized by warmth, not by company size. Start where the yeses are fastest.</p>
+              <Tbl headers={["Category","Why Start Here","Who Owns the Relationship","First Ask"]} rows={[
+                ["Active board members' employers",    "Fastest yes — they're already invested",             "Dan + Anthony",   "Tier 1 then Tier 2 immediately"],
+                ["Current chapter sponsors",           "Already financially committed to ISPE-DVC",          "Anthony",         "EL champion + internal forward"],
+                ["Past chapter presidents",            "High credibility, peer-to-peer carry",               "Dan",             "Speaker/moderator nomination"],
+                ["Known end-user contacts (Holly, Mike, Dan D, Michelle)", "Critical for end-user gravity — named priorities", "Anthony + Dan", "Tier 2: forward one event invite"],
+                ["CRB (Emily Kate's employer)",        "Warm entry through EK, strong EL candidate",         "Emily Kate",      "EL outreach + Tier 3: happy hour host"],
+                ["Other regional pharma/biotech firms","Expanding the map once first wins are locked",       "Anthony + Liah",  "Tier 1 introduction"],
+              ]}/>
+            </Card>
+          </div>
+        )}
+
+        {/* CADENCE */}
+        {tab==="cadence" && (
+          <div>
+            <SectionHead>Operating Cadence</SectionHead>
+            <p style={{fontSize:13,color:N.muted,marginBottom:20}}>Lightweight, sustainable, and built for volunteers. The goal is consistency, not overhead.</p>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
+              <Card color={B.blue}>
+                <Sub style={{marginBottom:8,color:B.blue}}>Biweekly — Team Check-In</Sub>
+                <p style={{fontSize:12,color:N.muted,marginBottom:10}}>30 minutes. Same day, same time. No prep required beyond logging what you've done.</p>
+                {["What did each person do since last time?","What's coming up in the next two weeks?","What's blocked or needs a decision?","Any new contacts, topics, or feedback to log?"].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:5,display:"flex",gap:7,color:N.mid}}>
+                    <span style={{color:B.blue}}>·</span>{x}
+                  </div>
+                ))}
+              </Card>
+              <Card color={B.sky}>
+                <Sub style={{marginBottom:8,color:B.sky}}>Monthly — Committee Level</Sub>
+                <p style={{fontSize:12,color:N.muted,marginBottom:10}}>More focused. Review data. Feed other committees. Plan the next event cycle.</p>
+                {["Dan produces simple metrics update (attendance, EL count, end-user orgs, corporate conversations)","Feed Programming: topics heard + names who'd say yes","Feed Marketing: distribution timing + what we need from them","Anthony reports corporate pipeline status","Set priorities for the next 30 days"].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:5,display:"flex",gap:7,color:N.mid}}>
+                    <span style={{color:B.sky}}>·</span>{x}
+                  </div>
+                ))}
+              </Card>
+              <Card color={B.green}>
+                <Sub style={{marginBottom:8,color:B.green}}>Quarterly — In-Person</Sub>
+                <p style={{fontSize:12,color:N.muted,marginBottom:10}}>Get together in person — this is a team, not just a Zoom call. Build familiarity and assess the bigger picture.</p>
+                {["Review the 90-day plan: what worked, what didn't","Celebrate wins by name","Decide what to carry forward, what to drop","Talk about growing the team — who else should be in this room?","Set next quarter's focus areas"].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:5,display:"flex",gap:7,color:N.mid}}>
+                    <span style={{color:B.green}}>·</span>{x}
+                  </div>
+                ))}
+              </Card>
+            </div>
+
+            <Card style={{marginBottom:16}}>
+              <Sub style={{marginBottom:12}}>Event Promotion Pipeline</Sub>
+              <p style={{fontSize:13,color:N.muted,marginBottom:14}}>We don't control programming or speakers — but we own the promotion pipeline. The goal is to push for earlier visibility on every event so promotion has more runway.</p>
+              <Tbl headers={["When","Who","What and Why"]} rows={[
+                ["As early as possible", "Dan",              "Advocate for MAC forms and event pages on Ticket Tailor to go live sooner — more runway = more registrations"],
+                ["T-6 weeks",            "Dan + Emily Kate", "Event is live on Ticket Tailor; save-the-date sent to all corporate contacts via Anthony; Emily Kate drafts content"],
+                ["T-4 weeks",            "Emily Kate",       "LinkedIn campaign begins: 3-post series, board repost prompt distributed"],
+                ["T-3 weeks",            "Anthony",          "Confirm which companies will forward internally; send them event link and suggested copy"],
+                ["T-2 weeks",            "Emily Kate",       "Second LinkedIn push; board repost prompt reminder"],
+                ["T-1 week",             "All four",         "Final push: personal outreach to EL contacts (Liah), corporate nudges (Anthony), social urgency (Emily Kate)"],
+                ["Day of",               "Liah + Anthony",   "Greet first-timers and EL attendees personally; make introductions; capture new names"],
+                ["T+24 hrs",             "Dan",              "Pull attendance data from Ticket Tailor: total, ticket types, org names if available"],
+                ["T+72 hrs",             "Emily Kate",       "Personal follow-up to new and EL attendees — 3 sentences, one question, real email address"],
+                ["T+1 week",             "Dan",              "Log follow-up response themes; feed Programming with topics + names; update tracker"],
+              ]}/>
+              <div style={{marginTop:12,background:B.lorange,borderRadius:8,padding:"10px 14px",fontSize:12,color:B.orange}}>
+                <strong>Note:</strong> We do not control early bird pricing or speaker confirmation — those sit with Programming and the board. This timeline reflects what we can actually execute with the access and influence we have now.
+              </div>
+            </Card>
+
+            <Card style={{background:B.lblue,border:`1px solid ${B.blue}30`}}>
+              <Sub style={{marginBottom:8,color:B.blue}}>The 72-Hour Follow-Up Template</Sub>
+              <div style={{background:N.surface,border:`1px solid ${N.stone}`,borderRadius:8,padding:"14px 16px",fontStyle:"italic",fontSize:13,lineHeight:1.85,color:N.mid}}>
+                "Hi [First Name] — glad you could make it to [Event Name]. If you have 2 minutes, I'd love to hear one thing: what would make you want to come to the next one? No right answer — just genuinely curious. Hope to see you again soon."
+              </div>
+              <p style={{fontSize:12,color:N.muted,marginTop:10}}>Must come from a real person's email address — not a chapter alias, not a Mailchimp blast. One human to another. That's what gets replied to.</p>
+            </Card>
+          </div>
+        )}
+
+        {/* METRICS */}
+        {tab==="metrics" && (
+          <div>
+            <SectionHead>Metrics Dashboard</SectionHead>
+            <p style={{fontSize:13,color:N.muted,marginBottom:20}}>Track only what you can actually change. We are starting from near zero on data — that's fine. The goal in the first 30 days is to establish a baseline. Over time, consistent data on membership trends and event attendance becomes a real asset: the foundation for decisions the board can actually stand behind.</p>
+
+            <Card style={{marginBottom:16}}>
+              <Tbl headers={["Metric","Why It Matters","How to Capture","Review Cadence","What Good Looks Like"]} rows={[
+                ["Total Event Attendance",    "Chapter economics run on bodies in the room",           "Ticket Tailor registration count + door count",           "Every event",  "Trending up event-over-event"],
+                ["First-Time Attendees",      "New faces = new revenue and future members",             "Add 'Is this your first ISPE-DVC event?' to registration","Every event",  "Establish Q1 baseline; grow Q2+"],
+                ["Repeat Attendees (rolling)","Repeat = real belonging, not just marketing",            "Cross-reference registrant email list over time",          "Quarterly",    "20%+ attended within prior 6 months"],
+                ["EL Attendee Count",         "Lowest cost to acquire, highest lifetime value",        "Tag by ticket type in Ticket Tailor (EL/Student)",         "Every event",  "5+ per event by Day 60"],
+                ["End-User Org Representation","End-user presence = chapter relevance",                "Capture employer/org at registration",                     "Every event",  "Growing meaningfully from current baseline"],
+                ["Corporate Conversations",   "The relationship pipeline that unlocks distribution",   "Anthony's tracker in shared workspace",                    "Biweekly",     "10+ warm conversations logged by Day 60"],
+                ["Post-Event Response Rate",  "Tells us if follow-up is landing and resonating",       "Track replies to Emily Kate's 72-hr message",              "Every event",  "20%+ reply rate; all themes logged"],
+              ]}/>
+            </Card>
+
+            <Card style={{background:"#FFFBEB",border:"1px solid #D4A000",marginBottom:16}}>
+              <Sub style={{marginBottom:8,color:"#7A5C00"}}>Data Access Is a Real Constraint — Here's How We Handle It</Sub>
+              <p style={{fontSize:13,lineHeight:1.75,color:N.mid}}>Right now no one is pulling membership lists or running analytics. That's the starting line, not an excuse. The path forward: Dan maintains a simple shared tracker where attendance data from Ticket Tailor is logged after every event. Names and emails stay in the chapter's systems; the tracking sheet logs aggregate counts, ticket types, and org names where available. Start simple. The goal in 90 days is a baseline, not a BI dashboard.</p>
+            </Card>
+
+            <Card style={{background:B.lblue,border:"1px solid #c5d4f0",marginBottom:16}}>
+              <Sub style={{marginBottom:8,color:B.blue}}>The Case for Data Analytics</Sub>
+              <p style={{fontSize:13,color:N.mid,lineHeight:1.75,marginBottom:12}}>Right now decisions about programming, outreach, and investment are made on instinct. That's not a criticism — it's where every volunteer organization starts. But as we build our data foundation, we gain something more valuable: the ability to show the board what's actually working, make the case for resources with evidence, and identify the patterns that gut feel alone would miss.</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                {[
+                  {l:"Membership trends",   d:"Are we growing, holding, or declining quarter-over-quarter? Which event types drive the most new joins?"},
+                  {l:"Event attendance",    d:"Who comes back? Which events bring first-timers? Where do we lose people between event one and event two?"},
+                  {l:"Engagement pipeline",d:"Which corporate relationships converted to distribution wins? Which EL touchpoints led to membership? Connect the dots."},
+                ].map((item,i)=>(
+                  <div key={i} style={{background:N.surface,borderRadius:8,padding:"12px 14px"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:B.blue,marginBottom:5,textTransform:"uppercase",letterSpacing:"0.5px"}}>{item.l}</div>
+                    <div style={{fontSize:12,color:N.mid,lineHeight:1.55}}>{item.d}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <Card color={B.green}>
+                <Sub style={{marginBottom:10,color:B.green}}>What "Good" Looks Like at Day 90</Sub>
+                {["Attendance is clearly trending up — even one event with meaningful growth",
+                  "First-timer data is being captured consistently for the first time",
+                  "EL attendees are tracked and growing at each event",
+                  "End-user org count is visibly higher than where we started",
+                  "10+ corporate conversations logged with real outcomes noted",
+                  "Board has seen a one-page metrics update with directional improvement"
+                ].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:6,display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{color:B.green,flexShrink:0}}>✓</span>
+                    <span style={{color:N.mid,lineHeight:1.55}}>{x}</span>
+                  </div>
+                ))}
+              </Card>
+              <Card color={B.orange}>
+                <Sub style={{marginBottom:10,color:B.orange}}>Not Tracking Yet — By Design</Sub>
+                {["Membership conversion rate — comes after engagement is established",
+                  "LinkedIn follower count — vanity, not signal",
+                  "Email open rates — too noisy in this environment",
+                  "Revenue per event in isolation — needs context",
+                  "Any metric we can't actually influence in this role"
+                ].map((x,i)=>(
+                  <div key={i} style={{fontSize:12,marginBottom:6,display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{color:B.orange,flexShrink:0}}>✗</span>
+                    <span style={{color:N.mid,lineHeight:1.55}}>{x}</span>
+                  </div>
+                ))}
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* CORPORATE ASKS */}
+        {tab==="asks" && (
+          <div>
+            <SectionHead>Corporate Ask System</SectionHead>
+
+            <Card style={{background:B.navy,marginBottom:16}}>
+              <Sub style={{marginBottom:8,color:"rgba(255,255,255,0.5)"}}>The One-Page Corporate Ask Sheet</Sub>
+              <p style={{fontSize:12,color:"rgba(255,255,255,0.5)",marginBottom:14}}>This is the leave-behind. One page. Clean enough to forward internally. Adapt as needed per company.</p>
+              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"18px 20px",fontSize:13,lineHeight:1.9,color:"rgba(255,255,255,0.8)"}}>
+                <div style={{fontWeight:700,color:"#fff",marginBottom:12,fontSize:14,fontFamily:"'DM Serif Display',serif"}}>ISPE Delaware Valley Chapter — Partner With Us</div>
+                <strong style={{color:"#fff"}}>Who we are:</strong> The ISPE Delaware Valley Chapter is the professional home for pharmaceutical engineering and life sciences professionals across the Philadelphia region — one of the most pharma-dense areas in the world. Our Emerging Leaders Committee exists specifically to create a vibrant community for professionals entering the industry: connecting them with mentors, education, and each other.<br/><br/>
+                <strong style={{color:"#fff"}}>What we're looking for from you:</strong><br/>
+                We're not asking for a major commitment. We're asking for one of these, starting with whichever is easiest:<br/>
+                <div style={{marginTop:10,marginLeft:8,display:"flex",flexDirection:"column",gap:8}}>
+                  {[
+                    ["Name someone internal","an admin, early-career lead, or office manager who can help amplify ISPE events to your team"],
+                    ["Forward one event invite","share our next event to your internal channel. One email, two minutes."],
+                    ["Host a casual happy hour","let us bring a 60-minute program to your office or a nearby space"],
+                    ["Provide a voice","a speaker, moderator, or panelist from your team for a future chapter event"],
+                  ].map(([title,desc],i)=>(
+                    <div key={i} style={{display:"flex",gap:8}}>
+                      <span style={{color:"rgba(255,255,255,0.4)",flexShrink:0}}>✦</span>
+                      <span><strong style={{color:"#fff"}}>{title}</strong> — {desc}</span>
+                    </div>
+                  ))}
+                </div><br/>
+                <strong style={{color:"#fff"}}>What your early-career team gets:</strong> Access to the region's leading pharma professional network. Events starting at <strong style={{color:"#93B4F0"}}>$46.80</strong>. Full EL membership at <strong style={{color:"#93B4F0"}}>$121/year</strong>. Students attend free. A professional home at the exact moment in their career when it matters most.<br/><br/>
+                <strong style={{color:"#fff"}}>What your company gets:</strong> Recognition as an industry supporter. A talent pipeline that connects your brand to professional growth. And frankly — better events, because your people are in the room.
+              </div>
+            </Card>
+
+            <Card style={{marginBottom:16}}>
+              <Sub style={{marginBottom:8}}>Corporate Pipeline Tracker</Sub>
+              <p style={{fontSize:12,color:N.muted,marginBottom:12}}>Anthony owns this. Updated same day as every conversation. Shared in the workspace so the whole team has visibility.</p>
+              <Tbl headers={["Company","Contact","Warmth","Source","Ask Made","Response","Commitment","Next Step","Date"]} rows={[
+                ["[Company]","[Name]","Hot/Warm/Cold","Board/Sponsor/Network","Tier 1–5","Yes / Pending / No","Forward / Happy Hour / None","Send info / Confirm date / Follow up","[Date]"],
+                ["...","...","...","...","...","...","...","...","..."],
+              ]}/>
+            </Card>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <Card>
+                <Sub style={{marginBottom:12}}>Proposals to Bring to the Board</Sub>
+                {[
+                  {idea:"ISPE Ambassador Program",     detail:"Formal recognition tier for companies like CRB that consistently engage. Named supporter status, acknowledgment at events — currently in development, needs framework finalized."},
+                  {idea:"EL Dollar Match Program",     detail:"Chapter and/or sponsors co-fund EL tickets or memberships. Gets end-user companies to send teams with minimal cost friction. High leverage, needs budget line."},
+                  {idea:"Committee Prospectuses",      detail:"One-pager per committee: what the committee does, time commitment, what you'll gain. Can't recruit volunteers without something to recruit against. Assign to each chair."},
+                  {idea:"AV Emergency Kit",            detail:"Single low-cost budget line item. A bad AV experience erodes credibility and energy. This is cheap insurance."},
+                  {idea:"Text Reminder System",        detail:"For event reminders and membership renewals. High open rate, low cost, minimal lift. Bring a specific tool recommendation and cost estimate."},
+                ].map((item,i)=>(
+                  <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<4?`1px solid ${N.stone}`:"none"}}>
+                    <div style={{fontWeight:700,fontSize:12,color:N.ink}}>{item.idea}</div>
+                    <div style={{fontSize:11,color:N.muted,marginTop:4,lineHeight:1.55}}>{item.detail}</div>
+                  </div>
+                ))}
+              </Card>
+
+              <Card>
+                <Sub style={{marginBottom:12}}>8 Actions This Week</Sub>
+                {[
+                  {n:1, task:"Set up a shared digital workspace — centralize coordination, kill the scattered file dependency",       who:"Dan"},
+                  {n:2, task:"Assign 4 roles in writing — names to functions, sent to the group",                    who:"Dan"},
+                  {n:3, task:"Ensure all 4 members can view Ticket Tailor event pages",                              who:"Dan"},
+                  {n:4, task:"Begin building the corporate target list — start with board member employers",          who:"Anthony"},
+                  {n:5, task:"Schedule first outreach to known end-user contacts (Holly, Mike, Dan D, Michelle)",    who:"Anthony"},
+                  {n:6, task:"Identify next 2 events as campaign anchors; note registration page status",            who:"Dan"},
+                  {n:7, task:"Draft the one-page Corporate Ask Sheet",                                               who:"Dan + Emily Kate"},
+                  {n:8, task:"Set recurring biweekly team check-in — same day, same time",                          who:"Dan"},
+                ].map((item,i)=>(
+                  <div key={i} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start"}}>
+                    <div style={{
+                      background:B.blue,color:"#fff",borderRadius:"50%",
+                      width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:11,fontWeight:700,flexShrink:0,marginTop:1
+                    }}>{item.n}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,lineHeight:1.5,color:N.mid}}>{item.task}</div>
+                      <div style={{fontSize:10,color:N.muted,marginTop:2}}>Owner: {item.who}</div>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        background:B.navy,
+        borderTop:`1px solid rgba(255,255,255,0.08)`,
+        color:"rgba(255,255,255,0.35)",
+        textAlign:"center",
+        padding:"16px",
+        fontSize:11,
+        letterSpacing:"0.3px"
+      }}>
+        ISPE Delaware Valley Chapter · Membership Committee · 90-Day Engagement Master Plan · Dan Hall, Co-Chair · Internal Working Document
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById("root"));
+</script>
+</body>
+</html>

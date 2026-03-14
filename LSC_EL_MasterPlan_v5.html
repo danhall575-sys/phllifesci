@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSC Philadelphia — Emerging Leaders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: #F7F5F0;
+    color: #1C1917;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { height: 4px; width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #C8C4BB; border-radius: 4px; }
+  button { font-family: 'DM Sans', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const HEX = {
+  red:    "#D9213A",
+  blue:   "#1B4DB8",
+  orange: "#F07820",
+  teal:   "#00A99D",
+  green:  "#52B235",
+  yellow: "#F5C800",
+};
+
+const N = {
+  bg:      "#F7F5F0",
+  surface: "#FFFFFF",
+  stone:   "#EAE7E0",
+  ink:     "#1C1917",
+  mid:     "#44403C",
+  muted:   "#78716C",
+  ghost:   "#F0EDE8",
+};
+
+// Event color logic: red=flagship/signature, green=volunteer, yellow=underdog series, muted=optional
+const EVT_COLORS = {
+  flagship:   HEX.red,
+  volunteer:  HEX.green,
+  underdog:   HEX.yellow,
+  community:  HEX.teal,
+  signature:  HEX.red,
+};
+
+const TABS = [
+  {id:"overview",   label:"Overview",   dot:HEX.blue},
+  {id:"roadmap",    label:"Roadmap",    dot:HEX.green},
+  {id:"team",       label:"Team",       dot:HEX.teal},
+  {id:"activation", label:"Activation", dot:HEX.orange},
+  {id:"events",     label:"Events",     dot:HEX.red},
+  {id:"cadence",    label:"Cadence",    dot:HEX.green},
+  {id:"metrics",    label:"Metrics",    dot:HEX.blue},
+  {id:"partners",   label:"Partners",   dot:HEX.orange},
+];
+
+const TAB_ACCENT = {
+  overview:"#1B4DB8", roadmap:"#52B235", team:"#00A99D",
+  activation:"#F07820", events:"#D9213A", cadence:"#52B235",
+  metrics:"#1B4DB8", partners:"#F07820",
+};
+
+const Dot = ({color}) => (
+  <span style={{display:"inline-block",width:8,height:8,
+    borderRadius:"50%",background:color,flexShrink:0}}/>
+);
+
+const Mark = ({color, children}) => {
+  const isYellow = color === HEX.yellow;
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:5,
+      background: color + "18",
+      color: isYellow ? "#7A6000" : (color === N.muted ? N.muted : color),
+      border: `1px solid ${color}40`,
+      borderRadius:4, padding:"2px 9px",
+      fontSize:11, fontWeight:600, letterSpacing:"0.3px",
+      whiteSpace:"nowrap",
+    }}>{children}</span>
+  );
+};
+
+const Rule = ({color}) => (
+  <div style={{height:2, background:color||N.stone, borderRadius:1,
+    margin:"10px 0 18px", width:36}}/>
+);
+
+const Display = ({children, style={}}) => (
+  <h2 style={{
+    fontFamily:"'DM Serif Display', Georgia, serif",
+    fontSize:26, fontWeight:400, color:N.ink,
+    letterSpacing:"-0.3px", lineHeight:1.2, ...style
+  }}>{children}</h2>
+);
+
+const Sub = ({children, style={}}) => (
+  <p style={{fontSize:12, fontWeight:600, color:N.muted,
+    textTransform:"uppercase", letterSpacing:"1.2px", ...style}}>
+    {children}
+  </p>
+);
+
+const Card = ({children, style={}, color}) => (
+  <div style={{
+    background:N.surface, border:`1px solid ${N.stone}`,
+    borderRadius:10, padding:"20px 22px",
+    borderLeft: color ? `3px solid ${color}` : undefined,
+    ...style,
+  }}>{children}</div>
+);
+
+const Tbl = ({headers, rows}) => (
+  <div style={{overflowX:"auto", borderRadius:8, border:`1px solid ${N.stone}`}}>
+    <table style={{width:"100%", borderCollapse:"collapse", fontSize:12}}>
+      <thead>
+        <tr>{headers.map((h,i) => (
+          <th key={i} style={{
+            background:N.ink, color:"#fff",
+            padding:"9px 13px", textAlign:"left",
+            fontWeight:600, fontSize:11,
+            textTransform:"uppercase", letterSpacing:"0.7px",
+            whiteSpace:"nowrap",
+          }}>{h}</th>
+        ))}</tr>
+      </thead>
+      <tbody>{rows.map((row,i) => (
+        <tr key={i} style={{background:i%2===0?N.surface:N.ghost}}>
+          {row.map((cell,j) => (
+            <td key={j} style={{
+              padding:"8px 13px", borderBottom:`1px solid ${N.stone}`,
+              verticalAlign:"top", lineHeight:1.55, color:N.mid, fontSize:12,
+            }}>{cell}</td>
+          ))}
+        </tr>
+      ))}</tbody>
+    </table>
+  </div>
+);
+
+const Phase = ({num, days, color, headline, actions, owner, success, obstacle, workaround}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{marginBottom:12, border:`1px solid ${N.stone}`, borderRadius:10, overflow:"hidden"}}>
+      <button onClick={()=>setOpen(!open)} style={{
+        width:"100%", background:open?N.surface:N.ghost,
+        border:"none", padding:"16px 20px", cursor:"pointer",
+        display:"flex", justifyContent:"space-between", alignItems:"center",
+        textAlign:"left", transition:"background 0.15s",
+      }}>
+        <div style={{display:"flex", alignItems:"center", gap:14}}>
+          <div style={{
+            width:36, height:36, borderRadius:"50%",
+            background:color, flexShrink:0,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontFamily:"'DM Serif Display',serif",
+            color:"#fff", fontSize:17,
+          }}>{num}</div>
+          <div>
+            <div style={{fontSize:11, fontWeight:600, color:N.muted,
+              letterSpacing:"0.8px", textTransform:"uppercase", marginBottom:2}}>{days}</div>
+            <div style={{fontSize:15, fontWeight:600, color:N.ink}}>{headline}</div>
+          </div>
+        </div>
+        <span style={{fontSize:18, color:N.muted, userSelect:"none", marginLeft:12}}>
+          {open?"−":"+"}
+        </span>
+      </button>
+      {open && (
+        <div style={{padding:"20px", background:N.surface, borderTop:`1px solid ${N.stone}`}}>
+          <div style={{display:"grid", gridTemplateColumns:"3fr 2fr", gap:20}}>
+            <div>
+              <Sub style={{marginBottom:10}}>Priority Actions</Sub>
+              {actions.map((a,i) => (
+                <div key={i} style={{display:"flex", gap:10, marginBottom:9}}>
+                  <span style={{
+                    color:"#fff", background:color, borderRadius:"50%",
+                    width:20, height:20, minWidth:20,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    fontSize:10, fontWeight:700, flexShrink:0, marginTop:1,
+                  }}>{i+1}</span>
+                  <span style={{fontSize:13, color:N.mid, lineHeight:1.55}}>{a}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{display:"flex", flexDirection:"column", gap:8}}>
+              {[
+                {l:"Owner",             v:owner,      bg:"#F5F4F1", bd:N.stone},
+                {l:"✓ Success Signal",  v:success,    bg:"#EDF7E9", bd:"#A8D89A"},
+                {l:"⚠ Likely Obstacle", v:obstacle,   bg:"#FFF4E8", bd:"#F9C08A"},
+                {l:"💡 Workaround",     v:workaround, bg:"#F5F0FB", bd:"#C4B0F0"},
+              ].map((box,i) => (
+                <div key={i} style={{background:box.bg, borderRadius:8,
+                  padding:"10px 12px", border:`1px solid ${box.bd}`}}>
+                  <div style={{fontSize:10, fontWeight:700, color:N.muted,
+                    textTransform:"uppercase", letterSpacing:"0.6px", marginBottom:3}}>{box.l}</div>
+                  <div style={{fontSize:12, color:N.mid, lineHeight:1.5}}>{box.v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Inline leave-behind rendered as light card
+const LeaveBehind = () => (
+  <div style={{
+    background:N.surface, border:`1px solid ${N.stone}`,
+    borderRadius:10, padding:"24px 28px", marginBottom:18,
+    borderTop:`3px solid ${HEX.orange}`,
+  }}>
+    <Sub style={{marginBottom:4}}>One-Page Leave-Behind</Sub>
+    <p style={{fontSize:11, color:N.muted, marginBottom:18}}>
+      Clean enough to forward internally. Always feel personal, not templated.
+    </p>
+    <h3 style={{
+      fontFamily:"'DM Serif Display',serif",
+      fontSize:18, fontWeight:400, color:N.ink, marginBottom:16,
+    }}>Life Science Cares Philadelphia — Emerging Leaders Committee</h3>
+
+    {[
+      {label:"Who we are", text:"The Emerging Leaders Committee is a new initiative under Life Science Cares Philadelphia, connecting early-career life sciences professionals to a community combining real professional development with civic purpose. We're building from the ground up and looking for partners who want to be part of something new."},
+      {label:"What LSC does", text:"Life Science Cares mobilizes the life sciences industry to address the root causes of poverty in Philadelphia — funding nonprofits, building workforce pipelines, and connecting industry resources to community need. Your partnership lands there."},
+    ].map((item,i) => (
+      <p key={i} style={{fontSize:13, color:N.mid, lineHeight:1.75, marginBottom:12}}>
+        <strong style={{color:N.ink}}>{item.label}:</strong> {item.text}
+      </p>
+    ))}
+
+    <p style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:10}}>
+      What we're asking — start with whichever is easiest:
+    </p>
+    {[
+      ["Connect us with the right person", "the manager or admin who can get LSC events in front of your early-career team"],
+      ["Commit to sharing our events", "forward our invites through internal channels on a recurring basis"],
+      ["Attend with your team", "let us introduce you as a community supporter at an LSC event"],
+      ["Speak or participate", "a voice from your organization at our Fall event or a fireside chat"],
+      ["Sponsor the Fall event", "connect us with your head of Corporate Social Responsibility"],
+    ].map(([bold, rest], i) => (
+      <div key={i} style={{display:"flex", gap:10, marginBottom:8,
+        fontSize:13, color:N.mid, lineHeight:1.6}}>
+        <span style={{color:HEX.orange, fontWeight:700, flexShrink:0}}>✦</span>
+        <span><strong style={{color:N.ink}}>{bold}</strong> — {rest}</span>
+      </div>
+    ))}
+
+    <p style={{fontSize:13, color:N.mid, lineHeight:1.75, marginTop:12}}>
+      <strong style={{color:N.ink}}>What your team gets:</strong> Access to one of the most mission-driven professional communities in Philadelphia's life sciences ecosystem — discounted event access, real mentorship connections, and a way to give back at the same time they're growing professionally.
+    </p>
+  </div>
+);
+
+function App() {
+  const [tab, setTab] = useState("overview");
+
+  return (
+    <div style={{minHeight:"100vh", background:N.bg}}>
+
+      {/* HEADER */}
+      <div style={{background:N.surface, borderBottom:`1px solid ${N.stone}`}}>
+        <div style={{maxWidth:1020, margin:"0 auto", padding:"0 24px"}}>
+
+          {/* Masthead */}
+          <div style={{padding:"22px 0 16px"}}>
+            <Sub style={{marginBottom:6}}>Life Science Cares Philadelphia</Sub>
+            <div style={{display:"flex", alignItems:"flex-start",
+              justifyContent:"space-between", gap:24, flexWrap:"wrap"}}>
+              <div>
+                <Display style={{fontSize:30}}>Emerging Leaders Committee</Display>
+                <div style={{display:"flex", alignItems:"center", gap:8,
+                  marginTop:10, flexWrap:"wrap"}}>
+                  {[
+                    {label:"Founding Plan · 2026",  color:HEX.blue},
+                    {label:"Dan Hall · Chair",       color:HEX.teal},
+                    {label:"Philadelphia",           color:HEX.green},
+                  ].map((tag,i) => <Mark key={i} color={tag.color}>{tag.label}</Mark>)}
+                </div>
+              </div>
+              {/* North Star — horizontal, comfortable */}
+              <div style={{
+                flex:"1 1 340px", maxWidth:520,
+                background:N.ghost, borderRadius:10, padding:"14px 20px",
+                borderLeft:`3px solid ${HEX.green}`,
+                display:"flex", flexDirection:"column", justifyContent:"center",
+              }}>
+                <Sub style={{marginBottom:6, color:HEX.green}}>North Star</Sub>
+                <p style={{fontSize:13, color:N.mid, lineHeight:1.7, margin:0}}>
+                  Connect early-career life sciences professionals to a community combining
+                  real professional development with civic purpose — building belonging that
+                  makes people show up, contribute, and stay.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tab strip */}
+          <div style={{display:"flex", gap:0, overflowX:"auto"}}>
+            {TABS.map(t => {
+              const active = tab === t.id;
+              return (
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{
+                  background:"transparent", border:"none",
+                  borderBottom:active?`2px solid ${t.dot}`:"2px solid transparent",
+                  padding:"11px 16px",
+                  display:"flex", alignItems:"center", gap:6,
+                  color:active?N.ink:N.muted,
+                  fontWeight:active?600:400,
+                  fontSize:13, cursor:"pointer",
+                  whiteSpace:"nowrap", transition:"color 0.15s",
+                  letterSpacing:"-0.1px",
+                }}>
+                  {active && <Dot color={t.dot}/>}
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* BODY */}
+      <div style={{maxWidth:1020, margin:"0 auto", padding:"36px 24px 80px"}}>
+
+        {/* ══ OVERVIEW ══ */}
+        {tab==="overview" && <>
+          <Display>What This Is and Why It Matters</Display>
+          <Rule color={HEX.blue}/>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
+            gap:14, marginBottom:24}}>
+            {[
+              {color:HEX.blue, icon:"🏙️", title:"Philadelphia Is the Right Place",
+               body:"Greater Philadelphia is one of the densest life sciences regions in the world, and it's growing fast. Life Science Cares is already doing meaningful work connecting industry to civic purpose, and this committee compounds that momentum."},
+              {color:HEX.orange, icon:"🎯", title:"No Early-Career Home Exists Yet",
+               body:"Early-career life sciences professionals in the region have limited options for a community that feels both substantive and mission-driven. That's the gap this committee fills: technical exposure, real relationships, and a reason to give back."},
+              {color:HEX.green, icon:"🌱", title:"We Are Founding Something New",
+               body:"This committee starts from the ground up, which means we get to build it right. The intent, the relationships, and the anchor events are already in place. Phase 1 is simply about making it real."},
+            ].map((c,i) => (
+              <div key={i} style={{
+                background:N.surface, border:`1px solid ${N.stone}`,
+                borderRadius:10, padding:"18px",
+                borderTop:`3px solid ${c.color}`,
+              }}>
+                <div style={{fontSize:26, marginBottom:10}}>{c.icon}</div>
+                <h3 style={{fontSize:14, fontWeight:700, color:N.ink,
+                  marginBottom:7, lineHeight:1.3}}>{c.title}</h3>
+                <p style={{fontSize:12, color:N.muted, lineHeight:1.65}}>{c.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:24}}>
+            {[
+              {color:HEX.green, label:"✓ What We Have to Build With", items:[
+                "A full 2026 LSC event calendar to anchor programming around, with events already on the books",
+                "Strong personal networks: 4 to 20 people have already expressed interest",
+                "Discounted ticket access negotiated for committee members at flagship LSC events",
+                "A Fall 2026 slot reserved for the committee's own signature fundraising event",
+                "A civic mission that gives this committee purpose beyond professional networking",
+                "An operating approach that keeps barriers low: use your network, ask for time not money",
+              ]},
+              {color:HEX.orange, label:"→ What Still Needs to Be Built", items:[
+                "A shared information home: nothing is written down or stored accessibly yet",
+                "A communication rhythm: no regular outreach to the interest list exists",
+                "Defined roles: people have expressed interest, but no one has a function yet",
+                "A confirmed Lead team: participation is still theoretical",
+                "A fundraising pipeline: the $5K goal needs corporate relationships behind it",
+                "An event marketing approach: how do we mobilize our network around each LSC event?",
+                "A Fall event concept: format, fundraising mechanism, and speaker all TBD",
+              ]},
+            ].map((col,i) => (
+              <Card key={i} color={col.color}>
+                <p style={{fontSize:12, fontWeight:700, color:col.color, marginBottom:10}}>{col.label}</p>
+                {col.items.map((x,j) => (
+                  <div key={j} style={{display:"flex", gap:8, marginBottom:6,
+                    fontSize:12, color:N.mid, lineHeight:1.5}}>
+                    <span style={{color:col.color, fontWeight:700, flexShrink:0}}>·</span>
+                    <span>{x}</span>
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </div>
+
+          <Card style={{marginBottom:24}}>
+            <Sub style={{marginBottom:10}}>90-Day Success Criteria</Sub>
+            <Tbl headers={["What We're Building","Target by Day 90","Why It Matters"]} rows={[
+              ["Committee Structure",        "3 to 5 Leads confirmed with defined roles; workspace live",  "Nothing executes without people who own something"],
+              ["LSC Event Presence",         "Show up as a committee at 2+ LSC anchor events",            "Presence is proof of concept, and it builds credibility with LSC"],
+              ["Founding Lead Team",         "3 to 5 people actively contributing, not just on the list", "Quality over quantity in Phase 1: the right three beats a list of twenty"],
+              ["Fall Event Foundation",      "Date and concept locked; one sponsor conversation begun",    "Fall 2026 is the committee's first signature moment"],
+              ["Corporate Pipeline Started", "5+ sponsor conversations logged",                           "Can't hit $5K without relationships started now"],
+              ["Information Home",           "One shared Notion with all key info, actually in use",      "Without a place for things to live, nothing compounds"],
+              ["LSC Staff Partnership",      "Biweekly check-in with Lexi active and valued",             "Staff partnership is the multiplier on everything else"],
+            ]}/>
+          </Card>
+
+          <div style={{display:"grid", gridTemplateColumns:"3fr 2fr", gap:14}}>
+            <Card color={HEX.blue}>
+              <Sub style={{marginBottom:6}}>The Strategy in Plain Terms</Sub>
+              <p style={{fontSize:13, color:N.mid, lineHeight:1.75, marginBottom:10}}>
+                We are building alongside Life Science Cares, complementing work that is already
+                excellent. Our job is to activate early-career professionals around that work:
+                showing up to LSC events, growing the network that attends them, and eventually
+                running our own programming that extends their impact.
+              </p>
+              <p style={{fontSize:12, color:N.muted, lineHeight:1.7}}>
+                The Fall 2026 signature event is the first thing that is entirely ours.
+                Everything before it is about earning the community that makes that event
+                worth attending.
+              </p>
+            </Card>
+            <div style={{background:"#FEFBE6", border:`1px solid ${HEX.yellow}40`,
+              borderRadius:10, padding:"18px 20px"}}>
+              <Sub style={{marginBottom:10, color:"#7A6000"}}>Working Assumptions</Sub>
+              <p style={{fontSize:11, color:"#7A6000", marginBottom:10, lineHeight:1.5}}>
+                This is a living document. Everything below is a starting point, subject to change
+                as the committee takes shape.
+              </p>
+              {[
+                "Lead roles are placeholders, confirmed at the founding meeting",
+                "LSC staff support level to be clarified with Lexi",
+                "ISPE is a parallel opportunity, not core to this committee",
+                "Fall event format intentionally open — ideas in development",
+                "Committee size uncertain, designing for 3 to 5 Leads",
+              ].map((x,i) => (
+                <div key={i} style={{fontSize:12, display:"flex", gap:7,
+                  marginBottom:5, color:"#7A6000", lineHeight:1.4}}>
+                  <span style={{flexShrink:0}}>·</span><span>{x}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>}
+
+        {/* ══ ROADMAP ══ */}
+        {tab==="roadmap" && <>
+          <Display>90-Day Roadmap</Display>
+          <Rule color={HEX.green}/>
+          <p style={{fontSize:13, color:N.muted, marginBottom:22}}>
+            Click each phase to expand. Every action is anchored to a real event or milestone.
+          </p>
+
+          <Phase num="1" days="Days 1–30 · March–Early April" color={HEX.blue}
+            headline="Make the committee real. Infrastructure, communication, and first visibility."
+            actions={[
+              "Create a shared Notion workspace as the single home for all committee information: member list, roles, event calendar, tracker, and meeting notes",
+              "Send a welcome message to the full interest list, introduce the Lead vs. Member distinction, share the mission, and invite people to step into a role",
+              "Confirm 3 to 5 people for Lead roles through direct conversation, and assign provisional functions to each",
+              "Schedule and hold the founding committee meeting: March or early April, 45 minutes",
+              "Establish a biweekly standing check-in with Lexi Simchak (primary LSC staff contact)",
+              "Coordinate 2 to 5 committee members to attend March 27 Career Fair together, the committee's first visible group act",
+              "Get the discounted ticket link from Lexi for the April 22 Impact Reception and distribute to the full interest list",
+              "Draft the committee mission statement and bring it to the founding meeting for group refinement",
+              "Start a corporate target list: 10 names from personal network who might sponsor or support the Fall event",
+              "Develop the initial promotional approach: personal networks, LinkedIn, internal channel asks at member companies",
+            ]}
+            owner="Dan Hall, with explicit goal of building shared ownership before Phase 2"
+            success="Workspace live and in use. 3 to 5 Leads confirmed. Founding meeting held. April 22 tickets in motion. LSC check-in cadence set."
+            obstacle="The gap between 'I'm interested' and 'I have a role' is where volunteer efforts stall. People go quiet when the ask becomes concrete."
+            workaround="Start with the smallest possible ask. Not 'will you be the Fundraising Lead?' — something like 'can you come to the Career Fair with me?' Build from there."
+          />
+
+          <Phase num="2" days="Days 31–60 · April–May" color={HEX.orange}
+            headline="Activate the Lead team. Run the first full event cycle. Lock the Fall concept."
+            actions={[
+              "Attend April 22 Impact Reception as a visible committee, coordinate arrival, make introductions, capture names. Dan can't attend — designate a Lead to run day-of coordination",
+              "Hold the second committee meeting: debrief April 22, confirm roles formally, make one locked Fall event decision",
+              "Launch the promotional approach: personal network outreach, LinkedIn amplification, internal channel asks at member companies",
+              "Begin corporate sponsor outreach starting with the lowest-barrier ask: attend an event, or name an internal champion",
+              "Confirm participation in June 18 Bases & Breakthroughs. If running the 50/50 volunteer role, assign Leads and coordinate with Lexi",
+              "Promote April 7 Underdog Series lightly to Members: one message, low pressure, keeps the list warm",
+              "Build the corporate ask pipeline in the shared workspace",
+              "Draft the one-page committee overview document, shareable with anyone who asks",
+              "Identify at least one senior industry leader who would speak at or attend the Fall event",
+              "Check in with Lexi after April 22 and share how it went",
+            ]}
+            owner="Dan and confirmed Leads. This is where the Lead tier starts carrying real weight."
+            success="Committee showed up together at Impact Reception. Fall event has one locked decision. Two or more corporate conversations started. Promotional approach is live."
+            obstacle="Fall event feels abstract and far away, easy to defer while current events feel more urgent"
+            workaround="Lock one Fall event decision per meeting: format, date, venue type, or theme. One decision a month means the Fall event has a skeleton by June."
+          />
+
+          <Phase num="3" days="Days 61–90 · June–July" color={HEX.green}
+            headline="Deliver visible momentum. Lock the Fall event. Show LSC we're a real partner."
+            actions={[
+              "Attend June 18 Bases & Breakthroughs. Run the 50/50 volunteer role if confirmed — assign Leads to cover it. First fundraising contribution to LSC.",
+              "Lock the Fall signature event: confirmed date, venue category, format, and primary fundraising mechanism",
+              "Secure the first committed corporate sponsor, even a table or in-kind donation counts",
+              "Produce a one-page committee update for LSC leadership: who we are, what we've done, what's coming",
+              "Plan August 5 Project Onramp Showcase attendance, free and on-mission, explore the mentorship connection",
+              "Promote June 2 Underdog Series lightly to Members",
+              "Begin outreach for Fall event keynote, personal network first, ask for time not money",
+              "Assign a Lead specifically for Fall event outreach: the 'who's coming' list and personal invitations",
+              "Reflect on the first 90 days: what worked, who showed up, what Phase 4 needs to solve",
+              "Define 'Member in good standing' in writing: minimum expected participation for the Member tier",
+            ]}
+            owner="Full committee. Dan coordinates and produces the LSC update."
+            success="Fall event has a locked date, format, and at least one sponsor conversation. Bases & Breakthroughs had visible committee participation. The committee feels like a team."
+            obstacle="Summer energy drops. People get busy and the Fall event feels far away."
+            workaround="Name the Fall event date on every communication. Attach every summer action to it. Urgency is manufactured — that's fine and it works."
+          />
+
+          <Card color={HEX.teal} style={{marginTop:6}}>
+            <Sub style={{marginBottom:6}}>How We Amplify Without a Budget</Sub>
+            <p style={{fontSize:13, color:N.mid, lineHeight:1.75}}>
+              The committee's promotional engine is personal networks, LinkedIn, and internal
+              channels at member companies. For every event the approach escalates: personal
+              message to warmest contacts first, then a LinkedIn post, then an internal channel
+              forward through a corporate champion, then a real-person reminder email.
+              The goal is eventually to reach strangers, but the path of least resistance runs
+              through the people already in the room.
+            </p>
+          </Card>
+        </>}
+
+        {/* ══ TEAM ══ */}
+        {tab==="team" && <>
+          <Display>Team Structure</Display>
+          <Rule color={HEX.teal}/>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:28}}>
+            {[
+              {color:HEX.teal, icon:"⚙️", title:"Leads",
+               sub:"Leads have a function, a lane, and visibility. They are the founding team — the people building the committee from the inside and shaping what it becomes.",
+               items:[
+                 "Named role with a specific function and clear ownership",
+                 "Expected at committee meetings and at LSC anchor events",
+                 "Responsible for at least one deliverable per event cycle",
+                 "Recognized by name in official committee communications",
+                 "First access to leadership opportunities: running events, chairing subcommittees",
+                 "Credit toward the committee's annual fundraising goal",
+               ]},
+              {color:HEX.blue, icon:"🌐", title:"Members",
+               sub:"Members are part of something meaningful without the weight of ownership. Ambassadors, volunteers, advocates. Participation is expected — the time commitment is lighter.",
+               items:[
+                 "No assigned function, but participation is expected — not passive",
+                 "Attend 1 to 2 LSC events per year",
+                 "Act as ambassadors: share events, bring colleagues, promote the mission",
+                 "Volunteer at events when the committee asks for hands",
+                 "Recognized publicly as part of the committee",
+                 "Path to Lead is always open: step up and we'll make room",
+               ]},
+            ].map((col,i) => (
+              <Card key={i} color={col.color}>
+                <div style={{fontSize:26, marginBottom:8}}>{col.icon}</div>
+                <h3 style={{fontSize:16, fontWeight:700, color:N.ink, marginBottom:6}}>{col.title}</h3>
+                <p style={{fontSize:12, color:N.muted, marginBottom:12, lineHeight:1.65}}>{col.sub}</p>
+                {col.items.map((x,j) => (
+                  <div key={j} style={{display:"flex", gap:8, marginBottom:6,
+                    fontSize:12, color:N.mid, lineHeight:1.5}}>
+                    <span style={{color:col.color, fontWeight:700, flexShrink:0}}>·</span>
+                    <span>{x}</span>
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </div>
+
+          <Display style={{fontSize:22, marginBottom:4}}>Lead Roles</Display>
+          <Rule color={HEX.teal}/>
+          <p style={{fontSize:13, color:N.muted, marginBottom:20}}>
+            Five functions the committee needs to operate. In a small founding team,
+            one person can cover two roles. Names to be confirmed at the founding meeting.
+          </p>
+
+          {[
+            {color:HEX.teal,   emoji:"🪑", title:"Chair",
+             name:"Dan Hall", note:"Business Development · Zeta",
+             core:[
+               "Own the committee's overall direction and operating rhythm",
+               "Serve as primary liaison to Lexi Simchak at LSC",
+               "Maintain the shared workspace and keep information current",
+               "Coordinate across all Leads and surface blockers early",
+               "Produce committee updates for LSC leadership quarterly",
+               "Hold final accountability for the Fall signature event",
+             ],
+             rhythm:[
+               "Review workspace — anything stale or missing?",
+               "Check in with each Lead before the biweekly",
+               "Prep one specific ask for each LSC staff check-in",
+               "Debrief with Leads within 48 hrs of each event",
+               "Advance Fall event — one locked decision per month",
+             ],
+             owns:"Direction · LSC relationship · Workspace · Fall event accountability",
+             supports:"All Leads"},
+            {color:HEX.green,  emoji:"💰", title:"Fundraising & Sponsorship Lead",
+             name:"[To Be Confirmed]", note:"Ideal: BD, sales, or corporate relationship background",
+             core:[
+               "Own the corporate sponsor pipeline: identify, track, and advance relationships",
+               "Lead the escalating ask conversation with potential sponsors",
+               "Coordinate with Chair on Fall event sponsorship strategy",
+               "Track all conversations and commitments in the shared workspace",
+               "Own the committee's progress toward the annual fundraising goal",
+             ],
+             rhythm:[
+               "Log any new sponsor conversations same day",
+               "Follow up on open asks with a specific next step",
+               "Report pipeline at biweekly Leads check-in",
+               "6 weeks before Fall event: confirm sponsor commitments",
+             ],
+             owns:"Corporate pipeline · Sponsor conversations · Fundraising progress",
+             supports:"Chair on event budget · Programming Lead on speaker asks"},
+            {color:HEX.blue,   emoji:"🎙️", title:"Programming & Events Lead",
+             name:"[To Be Confirmed]", note:"Ideal: logistics, planning, or event coordination background",
+             core:[
+               "Own the Fall signature event planning: concept, venue, logistics, run-of-show",
+               "Coordinate committee attendance at LSC anchor events",
+               "Develop the fireside chat and mentorship session concept for future quarters",
+               "Identify and pursue speakers and venue partners",
+               "Maintain the event planning checklist in the shared workspace",
+             ],
+             rhythm:[
+               "Update event planning tracker weekly",
+               "Confirm RSVPs for upcoming LSC events",
+               "Advance one Fall event element per week",
+               "Confirm logistics T-4 weeks before Fall event",
+             ],
+             owns:"Fall event planning · LSC event coordination · Speaker pipeline",
+             supports:"Chair on venue/speaker asks · Comms Lead on promotion"},
+            {color:HEX.orange, emoji:"📣", title:"Communications & Outreach Lead",
+             name:"[To Be Confirmed]", note:"Ideal: LinkedIn-comfortable, strong writer, large personal network",
+             core:[
+               "Own the committee's communication rhythm to the full Member list",
+               "Draft and send event promotion for each LSC anchor event",
+               "Develop the LinkedIn amplification approach: pre-written posts, board repost prompts",
+               "Build the internal channel ask strategy: identify corporate champions who can forward invites",
+               "Write and send post-event follow-up from a real person, not a committee alias",
+             ],
+             rhythm:[
+               "Review upcoming communications needs every two weeks",
+               "Draft event promo T-3 weeks out",
+               "Personal nudge to key contacts T-1 week",
+               "Post-event follow-up within 72 hrs",
+             ],
+             owns:"Member communications · LinkedIn · Internal channels · Post-event follow-up",
+             supports:"Programming Lead on messaging · Chair on announcements"},
+            {color:HEX.red,    emoji:"🤝", title:"Member Engagement Lead",
+             name:"[To Be Confirmed]", note:"Ideal: earlier in career, ideally a member of the target audience",
+             core:[
+               "Own the Member list: track who's engaged, gone quiet, or is new",
+               "Serve as peer-to-peer ambassador and recruit from personal network",
+               "Greet and introduce new faces at LSC events on behalf of the committee",
+               "Coordinate volunteer sign-ups for events that need committee hands",
+               "Surface feedback from Members to the Lead group",
+             ],
+             rhythm:[
+               "Check in with 1 to 2 quiet Members each week",
+               "Add newly interested people to workspace same day",
+               "Flag anyone ready to move to a Lead role",
+               "Coordinate Member attendance and volunteers before each event",
+             ],
+             owns:"Member list · Volunteer coordination · Peer outreach",
+             supports:"Comms Lead on outreach copy · Chair on Member retention"},
+          ].map((role,i) => (
+            <div key={i} style={{
+              background:N.surface, border:`1px solid ${N.stone}`,
+              borderRadius:10, padding:"20px 22px", marginBottom:12,
+              borderTop:`3px solid ${role.color}`,
+            }}>
+              <div style={{display:"flex", alignItems:"center", gap:12, marginBottom:14}}>
+                <span style={{fontSize:26}}>{role.emoji}</span>
+                <div>
+                  <h3 style={{fontSize:15, fontWeight:700, color:N.ink}}>{role.title}</h3>
+                  <p style={{fontSize:12, color:role.color, fontWeight:600, marginTop:1}}>
+                    {role.name}<span style={{color:N.muted, fontWeight:400}}> · {role.note}</span>
+                  </p>
+                </div>
+              </div>
+              <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:18}}>
+                <div>
+                  <Sub style={{marginBottom:8}}>Responsibilities</Sub>
+                  {role.core.map((r,j) => (
+                    <div key={j} style={{
+                      fontSize:12, color:N.mid, lineHeight:1.55, marginBottom:7,
+                      paddingLeft:10, borderLeft:`2px solid ${role.color}`,
+                    }}>{r}</div>
+                  ))}
+                </div>
+                <div>
+                  <Sub style={{marginBottom:8}}>Weekly Rhythm</Sub>
+                  {role.rhythm.map((r,j) => (
+                    <div key={j} style={{display:"flex", gap:7, marginBottom:6,
+                      fontSize:12, color:N.mid, lineHeight:1.5}}>
+                      <span style={{color:role.color, fontWeight:700, flexShrink:0}}>›</span>
+                      <span>{r}</span>
+                    </div>
+                  ))}
+                  <div style={{background:N.ghost, borderRadius:8, padding:"10px 12px", marginTop:10}}>
+                    <Sub style={{marginBottom:3, fontSize:9}}>Owns</Sub>
+                    <p style={{fontSize:11, color:N.mid}}>{role.owns}</p>
+                    <Sub style={{margin:"7px 0 3px", fontSize:9}}>Supports</Sub>
+                    <p style={{fontSize:11, color:N.mid}}>{role.supports}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div style={{background:N.surface, border:`1px solid ${N.stone}`,
+            borderRadius:10, padding:"18px 22px", marginTop:4}}>
+            <Sub style={{marginBottom:12}}>Handoff Chain — Every Event Cycle</Sub>
+            <div style={{display:"flex", alignItems:"center", gap:6, flexWrap:"wrap"}}>
+              {[
+                {label:"Chair confirms event",             color:HEX.teal},
+                {label:"Comms drafts promo",               color:HEX.orange},
+                {label:"Fundraising activates sponsors",   color:HEX.green},
+                {label:"Member Lead coordinates volunteers",color:HEX.red},
+                {label:"Programming runs day-of",          color:HEX.blue},
+                {label:"Comms sends follow-up",            color:HEX.orange},
+                {label:"Chair debriefs and logs",          color:HEX.teal},
+              ].map((item,j,arr) => (
+                <div key={j} style={{display:"flex", alignItems:"center", gap:6}}>
+                  <Mark color={item.color}>{item.label}</Mark>
+                  {j < arr.length-1 && <span style={{color:N.muted, fontSize:12}}>→</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </>}
+
+        {/* ══ ACTIVATION ══ */}
+        {tab==="activation" && <>
+          <Display>Activation Strategy</Display>
+          <Rule color={HEX.orange}/>
+
+          {/* Mission — light version, no dark background */}
+          <Card color={HEX.orange} style={{marginBottom:20, background:"#FFF8F2"}}>
+            <Sub style={{marginBottom:8}}>The Mission</Sub>
+            <p style={{
+              fontSize:14, color:N.mid, lineHeight:1.85,
+              fontFamily:"'DM Serif Display', Georgia, serif",
+              fontWeight:400, fontStyle:"italic",
+            }}>
+              "To foster community involvement, professional growth, and philanthropic engagement
+              among early-career professionals in the life sciences ecosystem of the greater
+              Philadelphia region — connecting emerging leaders with senior industry mentors,
+              creating educational programming, and raising funds and support for Life Science
+              Cares' outreach initiatives."
+            </p>
+          </Card>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
+            gap:14, marginBottom:24}}>
+            {[
+              {color:HEX.blue,   icon:"📍", title:"#1 Life Sciences Hub",
+               body:"Greater Philadelphia is one of the most pharma-dense regions in the world. The talent pipeline is enormous and underserved by purpose-driven professional communities."},
+              {color:HEX.orange, icon:"⏩", title:"A Critical Growth Moment",
+               body:"Workforce pipeline is one of the most cited investment concerns in the region. Early-career professionals entering now are entering at a pivotal time, and most have no community yet."},
+              {color:HEX.green,  icon:"🔗", title:"The Multiplier Effect",
+               body:"Early-career professionals recruit each other. One engaged person brings five more. The network effect is strongest at this stage and it compounds over time."},
+            ].map((s,i) => (
+              <div key={i} style={{
+                background:N.surface, border:`1px solid ${N.stone}`,
+                borderRadius:10, padding:"16px 18px",
+                borderTop:`3px solid ${s.color}`,
+              }}>
+                <div style={{fontSize:24, marginBottom:8}}>{s.icon}</div>
+                <h3 style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:6}}>{s.title}</h3>
+                <p style={{fontSize:12, color:N.muted, lineHeight:1.65}}>{s.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <Display style={{fontSize:22, marginBottom:4}}>Programming Model</Display>
+          <Rule color={HEX.orange}/>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:24}}>
+            {[
+              {color:HEX.orange, title:"Programming FOR Emerging Leaders",
+               sub:"Content that delivers real value — the access and exposure that makes people come back.",
+               items:[
+                 {t:"Fireside Chats and Panels",     d:"Senior end-user leaders in a candid small-group format. Real conversation. Ends on time."},
+                 {t:"Site Tours",                    d:"Facility access through corporate partners. Seeing a capital project in progress is irreplaceable exposure for early-career engineers."},
+                 {t:"Management Gap Training",       d:"Leadership programming for technical professionals: what does managing people actually take? High demand, almost no existing options."},
+                 {t:"LSC Flagship Co-Participation", d:"Impact Reception, Bases & Breakthroughs, Project Onramp — attending with a community is a different experience than attending alone."},
+               ]},
+              {color:HEX.green, title:"Programming BY Emerging Leaders",
+               sub:"Events the committee designs and runs — where ownership and momentum happen.",
+               items:[
+                 {t:"Fall Signature Fundraiser",  d:"Ideas in development: mini golf and long drive tournament at Tee's, leadership dinner with keynote, headshots and haircuts pop-up. Format locked by July."},
+                 {t:"Happy Hours and Networking",  d:"Low-cost, committee-hosted social events using donated or sponsored space. Open to all. Builds the ambient community that everything else grows from."},
+                 {t:"Volunteer Activations",       d:"Committee hands at LSC events: tables, raffles, logistics. Visible contribution that deepens the LSC partnership."},
+                 {t:"Mentorship Pipeline",         d:"Multi-generational model: senior leader, emerging professional, aspiring student. Explore at August 5 Project Onramp Showcase."},
+               ]},
+            ].map((col,i) => (
+              <Card key={i} color={col.color}>
+                <h3 style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:3}}>{col.title}</h3>
+                <p style={{fontSize:11, color:N.muted, marginBottom:12}}>{col.sub}</p>
+                {col.items.map((item,j) => (
+                  <div key={j} style={{
+                    marginBottom:11, paddingBottom:11,
+                    borderBottom:j<col.items.length-1?`1px solid ${N.stone}`:"none",
+                  }}>
+                    <p style={{fontSize:12, fontWeight:700, color:N.ink, marginBottom:3}}>{item.t}</p>
+                    <p style={{fontSize:11, color:N.muted, lineHeight:1.6}}>{item.d}</p>
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </div>
+
+          <Display style={{fontSize:22, marginBottom:4}}>The Escalating Ask</Display>
+          <Rule color={HEX.orange}/>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:24}}>
+            <Card>
+              <h3 style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:14}}>🎓 For Early-Career Professionals</h3>
+              {[
+                {tier:"Tier 1",  color:HEX.green,  ask:"Come to one LSC event with us. Discounted access, no commitment. Just see what it's like."},
+                {tier:"Tier 2",  color:HEX.green,  ask:"Bring a colleague. Share the event in your network."},
+                {tier:"Tier 3",  color:HEX.blue,   ask:"Join as a Member — part of this community, light expectations, real access."},
+                {tier:"Tier 4",  color:HEX.orange, ask:"Step into a Lead role — own something, get recognized, build your professional identity here."},
+                {tier:"Tier 5",  color:HEX.red,    ask:"Help design and run the Fall event. This is yours as much as anyone's."},
+              ].map((row,j) => (
+                <div key={j} style={{
+                  display:"flex", gap:10, alignItems:"flex-start",
+                  marginBottom:10, paddingBottom:10,
+                  borderBottom:j<4?`1px solid ${N.stone}`:"none",
+                }}>
+                  <Mark color={row.color}>{row.tier}</Mark>
+                  <p style={{fontSize:12, color:N.mid, lineHeight:1.55, paddingTop:1}}>{row.ask}</p>
+                </div>
+              ))}
+            </Card>
+            <Card>
+              <h3 style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:14}}>🏢 For Corporate and Senior Leaders</h3>
+              {[
+                {tier:"Tier 1",  color:HEX.green,  ask:"Connect us with the right person internally — someone who can get LSC events in front of your early-career team."},
+                {tier:"Tier 2",  color:HEX.green,  ask:"Commit to sharing our events through internal channels on a recurring basis."},
+                {tier:"Tier 3",  color:HEX.blue,   ask:"Bring your team to an LSC event — let us introduce you as a community supporter."},
+                {tier:"Tier 4",  color:HEX.orange, ask:"Speak or participate at our Fall event or a fireside chat series."},
+                {tier:"Tier 5",  color:HEX.red,    ask:"Sponsor the Fall event. Connect us with your head of Corporate Social Responsibility."},
+              ].map((row,j) => (
+                <div key={j} style={{
+                  display:"flex", gap:10, alignItems:"flex-start",
+                  marginBottom:10, paddingBottom:10,
+                  borderBottom:j<4?`1px solid ${N.stone}`:"none",
+                }}>
+                  <Mark color={row.color}>{row.tier}</Mark>
+                  <p style={{fontSize:12, color:N.mid, lineHeight:1.55, paddingTop:1}}>{row.ask}</p>
+                </div>
+              ))}
+            </Card>
+          </div>
+
+          <Card color={HEX.orange}>
+            <Sub style={{marginBottom:10}}>What to Bring Into Every Key Conversation</Sub>
+            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
+              {[
+                {l:"The mission",          d:"'We're building a community for early-career life sciences professionals that connects professional development with LSC's work addressing the root causes of poverty in Philadelphia.' That's the sentence."},
+                {l:"A specific event",     d:"Always anchor to something real and near-term. 'We have the Impact Reception on April 22 — can we get your team there?' gives people something concrete to say yes or no to."},
+                {l:"The discounted angle", d:"The committee has negotiated discounted access to LSC events. Getting your early-career team to a high-quality event at a reduced price is an easy yes for most managers."},
+                {l:"Ask at their level",   d:"Match the ask to the person. For a peer: 'Come with me.' For a manager: 'Forward this to your team.' For an executive: 'Connect us with your head of CSR.'"},
+              ].map((item,i) => (
+                <div key={i} style={{
+                  padding:"11px 14px",
+                  borderLeft:`2px solid ${HEX.orange}`,
+                  background:N.ghost, borderRadius:"0 8px 8px 0",
+                }}>
+                  <p style={{fontSize:12, fontWeight:700, color:N.ink, marginBottom:4}}>{item.l}</p>
+                  <p style={{fontSize:12, color:N.mid, lineHeight:1.55}}>{item.d}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>}
+
+        {/* ══ EVENTS ══ */}
+        {tab==="events" && <>
+          <Display>2026 Event Calendar</Display>
+          <Rule color={HEX.red}/>
+
+          {/* Legend */}
+          <div style={{display:"flex", gap:10, marginBottom:22, flexWrap:"wrap", alignItems:"center"}}>
+            <span style={{fontSize:12, color:N.muted}}>Color guide:</span>
+            <Mark color={HEX.red}>Flagship / Signature</Mark>
+            <Mark color={HEX.green}>Volunteer</Mark>
+            <Mark color={HEX.yellow}>Underdog Series</Mark>
+            <Mark color={HEX.teal}>Community</Mark>
+          </div>
+
+          {[
+            {date:"March 27",      name:"12 Plus Career Fair",          color:HEX.green,  badge:"Volunteer",          price:"Free",
+             role:"Show up together as 2 to 5 people. The committee's first visible act as a group.",
+             note:"No formal promotion needed. Use it as a bonding moment and a conversation starter heading into April.",
+             actions:["Dan coordinates attendance — 2 to 5 people","Brief debrief after: who came, what's next"]},
+            {date:"April 7",       name:"Underdog Series — Session 1",  color:HEX.yellow, badge:"Underdog Series",    price:"Free",
+             role:"Promote lightly — one message to keep the Member list warm between bigger events.",
+             note:"Save energy for April 22. One message, no pressure.",
+             actions:["Comms Lead sends one brief note to Member list"]},
+            {date:"April 22",      name:"Impact Reception",             color:HEX.red,    badge:"Flagship",           price:"$175 EL discount",
+             role:"First real mobilization test. Goal: 5 to 10 committee members at the discounted rate, showing up as a visible group and making introductions.",
+             note:"Dan cannot attend — designate a Lead to run day-of coordination. Ticket purchase is the first signal of who will actually move.",
+             actions:["Get discounted link from Lexi — add to workspace immediately","Send to full committee list with personal note and a clear deadline","Designate a Lead to coordinate group arrival and introductions","Capture names of anyone new who expresses interest","Debrief within 48 hrs"]},
+            {date:"June 2",        name:"Underdog Series — Session 2",  color:HEX.yellow, badge:"Underdog Series",    price:"Free",
+             role:"Promote lightly. Focus has shifted to Fall event planning.",
+             note:"Skip if the team is heads-down on Fall event logistics.",
+             actions:["Comms Lead sends brief promo if bandwidth allows"]},
+            {date:"June 18",       name:"Bases & Breakthroughs",        color:HEX.red,    badge:"Flagship",           price:"$150",
+             role:"The 'by emerging leaders' moment. If running the 50/50 or another volunteer role, assign Leads to cover it. Contributing, not just attending.",
+             note:"Confirm the volunteer/50-50 role with Lexi by May 15. Track any revenue the committee generates.",
+             actions:["Confirm volunteer role with Lexi by May 15","Assign 2 to 3 Leads to cover the activity day-of","Promote to Member list as a fun social event","Fundraising Lead tracks revenue generated","Bring people who haven't come to anything yet"]},
+            {date:"August 5",      name:"Project Onramp Showcase",      color:HEX.teal,   badge:"Community",          price:"Free",
+             role:"Free and on-mission. Attend as a group. Explore the mentorship connection between the committee and Project Onramp.",
+             note:"Ask Lexi directly at this event how a formal mentorship connection could be structured.",
+             actions:["Promote to full committee list","Chair attends and represents the committee formally","Begin Project Onramp mentorship conversation with Lexi"]},
+            {date:"September 22",  name:"Underdog Series — Session 3",  color:HEX.yellow, badge:"Underdog Series",    price:"Free",
+             role:"Optional only. The Fall event is imminent.",
+             note:"Skip promotion if the team is preparing for Fall event logistics.",
+             actions:["Comms Lead sends promo only if capacity exists"]},
+            {date:"Fall 2026",     name:"Signature Fundraising Event",  color:HEX.red,    badge:"Our Event",          price:"TBD — ticketed",
+             role:"The proof of concept. First event fully designed and run by this committee. Ideas in development: mini golf and long drive tournament at Tee's, leadership dinner with keynote, headshots and haircuts pop-up. Format TBD, locked by July.",
+             note:"Format locked by July. Venue should be in-kind or sponsored. Keynote should be a senior end-user whose name draws people. Target: 50 to 75 attendees, one committed sponsor, meaningful contribution toward the annual goal.",
+             actions:["Lock date and format by end of Phase 2","Secure venue partner by July","Confirm keynote or featured guest by July","Fundraising Lead manages sponsor pipeline","All Leads contribute to promotion and logistics","Report results to Lexi post-event"]},
+          ].map((ev,i) => {
+            const isYellow = ev.color === HEX.yellow;
+            const badgeColor = isYellow ? "#7A6000" : ev.color;
+            return (
+              <div key={i} style={{
+                background:N.surface, border:`1px solid ${N.stone}`,
+                borderRadius:10, padding:"18px 20px", marginBottom:12,
+                borderLeft:`3px solid ${ev.color}`,
+              }}>
+                <div style={{display:"flex", justifyContent:"space-between",
+                  alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:8}}>
+                  <div>
+                    <h3 style={{fontSize:15, fontWeight:700, color:N.ink}}>{ev.name}</h3>
+                    <p style={{fontSize:12, color:N.muted, marginTop:2}}>{ev.date} · 2026</p>
+                  </div>
+                  <div style={{display:"flex", gap:6, flexWrap:"wrap"}}>
+                    <Mark color={ev.color}>{ev.badge}</Mark>
+                    <Mark color={N.muted}>💰 {ev.price}</Mark>
+                  </div>
+                </div>
+                <div style={{background:N.ghost, borderRadius:8, padding:"10px 13px", marginBottom:10}}>
+                  <Sub style={{marginBottom:4, fontSize:9}}>Our Role</Sub>
+                  <p style={{fontSize:12, color:N.mid, lineHeight:1.6}}>{ev.role}</p>
+                </div>
+                <div style={{
+                  background:"#FEFBE6", border:`1px solid ${HEX.yellow}50`,
+                  borderRadius:8, padding:"8px 13px",
+                  fontSize:12, color:"#7A6000", marginBottom:10,
+                }}>
+                  <strong>Note: </strong>{ev.note}
+                </div>
+                {ev.actions.map((a,j) => (
+                  <div key={j} style={{display:"flex", gap:7, marginBottom:5,
+                    fontSize:12, color:N.mid}}>
+                    <span style={{color:ev.color === HEX.yellow ? "#7A6000" : ev.color, fontWeight:700, flexShrink:0}}>›</span>
+                    <span>{a}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </>}
+
+        {/* ══ CADENCE ══ */}
+        {tab==="cadence" && <>
+          <Display>Operating Cadence</Display>
+          <Rule color={HEX.green}/>
+          <p style={{fontSize:13, color:N.muted, marginBottom:22}}>
+            Lightweight and built for volunteers. Consistency beats frequency.
+            The goal is predictable rhythm, not overhead.
+          </p>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:14, marginBottom:24}}>
+            {[
+              {color:HEX.blue, title:"⚡ Biweekly — Leads Check-In",
+               sub:"30 minutes. Same day, same time. No prep required.",
+               items:["What did each Lead do since last time?","What's coming in the next two weeks?","What's blocked or needs a decision?","Any new contacts, sponsors, or Members to log?","One decision made per meeting — don't leave without it"]},
+              {color:HEX.red, title:"📋 Biweekly — LSC Staff Check-In",
+               sub:"Dan and Lexi Simchak (primary). 30 minutes. The most important recurring meeting in Phase 1.",
+               items:["Committee status: what happened, what's next","Confirm involvement in upcoming LSC events","Surface needs: links, assets, introductions, logistics","Flag sponsor conversations or news Lexi should know","Ask for one specific thing — come prepared with it"]},
+              {color:HEX.green, title:"🤝 Quarterly — In-Person (All Leads)",
+               sub:"Get together in person. This is a team — build the relationships that make everything else work.",
+               items:["Review the quarter: what worked, what didn't","Celebrate wins by name — this matters more than it sounds","Decide what to carry forward and what to drop","Who else should be in this room?","Set next quarter's focus areas"]},
+            ].map((col,i) => (
+              <Card key={i} color={col.color}>
+                <h3 style={{fontSize:13, fontWeight:700, color:N.ink, marginBottom:4}}>{col.title}</h3>
+                <p style={{fontSize:11, color:N.muted, marginBottom:12, lineHeight:1.5}}>{col.sub}</p>
+                {col.items.map((x,j) => (
+                  <div key={j} style={{display:"flex", gap:8, marginBottom:6,
+                    fontSize:12, color:N.mid, lineHeight:1.45}}>
+                    <span style={{color:col.color, fontWeight:700, flexShrink:0}}>·</span>
+                    <span>{x}</span>
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </div>
+
+          <Card style={{marginBottom:14}}>
+            <Sub style={{marginBottom:12}}>Event Promotion Pipeline</Sub>
+            <p style={{fontSize:12, color:N.muted, marginBottom:14}}>
+              Personal networks, LinkedIn, and internal channels — not advertising. Every event runs this same pipeline.
+            </p>
+            <Tbl headers={["When","Who","What"]} rows={[
+              ["Event confirmed",  "Chair",             "Get discounted link from Lexi if applicable; add to workspace; brief Leads"],
+              ["T-4 weeks",       "Comms Lead",         "Draft promotion message — personal tone, not newsletter"],
+              ["T-3 weeks",       "Comms Lead",         "Send invite to Member list; LinkedIn post drafted and live"],
+              ["T-3 weeks",       "Fundraising Lead",   "Reach out to warm corporate contacts: 'can you forward this to your team?'"],
+              ["T-2 weeks",       "Member Eng. Lead",   "Personal outreach to Members who haven't responded: 'Are you coming?'"],
+              ["T-1 week",        "All Leads",          "Final push: personal messages from real people to key contacts"],
+              ["Day before",      "Chair",              "Confirm count; 'see you tomorrow'; coordinate meet-up logistics"],
+              ["Day of",          "Member Lead + Leads","Greet first-timers; make introductions; represent the committee visibly"],
+              ["T+48 hrs",        "Comms Lead",         "Short follow-up to attendees: 'glad you came — here's how to stay involved'"],
+              ["T+1 week",        "Chair",              "Log attendance and new contacts in workspace; debrief with Leads"],
+            ]}/>
+          </Card>
+
+          <Card color={HEX.red}>
+            <Sub style={{marginBottom:8}}>The Post-Event Follow-Up Message</Sub>
+            <div style={{
+              background:N.ghost, borderRadius:8, padding:"14px 18px",
+              fontStyle:"italic", fontSize:13, color:N.mid, lineHeight:1.85,
+              borderLeft:`2px solid ${HEX.red}`,
+            }}>
+              "Hey [First Name] — really glad you made it to [Event]. I wanted to reach out
+              personally. We're building out the Emerging Leaders Committee and I think you'd
+              be a great fit — whether that's attending future events, getting more involved,
+              or just staying connected. Any interest in a quick call?"
+            </div>
+            <p style={{fontSize:11, color:N.muted, marginTop:8}}>
+              From a real person — Dan or a Lead, not a committee alias.
+              This is a relationship message, not a newsletter. That's what gets replied to.
+            </p>
+          </Card>
+        </>}
+
+        {/* ══ METRICS ══ */}
+        {tab==="metrics" && <>
+          <Display>Metrics</Display>
+          <Rule color={HEX.blue}/>
+          <p style={{fontSize:13, color:N.muted, marginBottom:22}}>
+            Starting from zero on data. The goal in Phase 1 is establishing a baseline,
+            not showing results. Build the tracking habit before building a system.
+          </p>
+
+          <Card style={{marginBottom:14}}>
+            <Tbl headers={["What We Track","Why It Matters","How to Capture","Cadence","What Good Looks Like"]} rows={[
+              ["Lead Team Size",              "Without a Lead team, nothing executes",                 "Workspace roster — confirmed names and roles",          "Phase 1 gate",      "3 to 5 Leads confirmed and active by Day 30"],
+              ["Member List Size",            "The ambassador pool — size equals reach",               "Interest list in workspace, updated after every event",  "Monthly",           "10+ Members by end of Phase 2"],
+              ["Committee Presence at Events","Are we showing up together?",                           "Post-event log: who came, how many, new contacts",       "Every event",       "3+ people at every anchor event as a group"],
+              ["New Contacts per Event",      "The network grows only if we're actively capturing it","Leads log names and contact info within 48 hrs",          "Every event",       "2 to 5 new contacts minimum per event"],
+              ["Corporate Conversations",     "The sponsor pipeline — $5K requires relationships",    "Fundraising Lead tracker in workspace",                  "Biweekly",          "5+ warm conversations by Day 60; 1 commitment by Day 90"],
+              ["Fall Event Milestones",       "The signature event is the year's proof of concept",   "Checklist: date, venue, speaker, sponsors",              "Monthly",           "All key decisions locked by August"],
+              ["Fundraising Progress",        "Shows LSC the committee is a real contributor",        "Fundraising Lead: tickets, sponsorships, donations",     "Monthly (Phase 2+)","Meaningful progress by Fall event"],
+            ]}/>
+          </Card>
+
+          <div style={{
+            background:"#FEFBE6", border:`1px solid ${HEX.yellow}50`,
+            borderRadius:10, padding:"16px 20px", marginBottom:16,
+          }}>
+            <Sub style={{marginBottom:6, color:"#7A6000"}}>⚠ Start Simple</Sub>
+            <p style={{fontSize:13, color:"#7A6000", lineHeight:1.75}}>
+              Dan creates one Notion page with three tables: Member list, event log, corporate tracker.
+              Updated same day as any activity. That's the entire system in Phase 1.
+              A simple system that gets used beats a complex one that doesn't.
+            </p>
+          </div>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14}}>
+            <Card color={HEX.green} style={{background:"#EDF7E9", border:`1px solid ${HEX.green}40`}}>
+              <Sub style={{marginBottom:10, color:"#2d7a1f"}}>What "Good" Looks Like at Day 90</Sub>
+              {[
+                "3 to 5 confirmed Leads with real roles — not just names on a list",
+                "Committee showed up together at 2+ LSC events",
+                "Fall event has a locked date, concept, and at least one sponsor conversation",
+                "5+ corporate conversations started and logged",
+                "Shared workspace exists and is being used by more than one person",
+                "Lexi views the committee as a real contributor",
+                "10+ people know they are Members and what that means",
+              ].map((x,i) => (
+                <div key={i} style={{display:"flex", gap:8, marginBottom:6,
+                  fontSize:12, color:"#2d7a1f", lineHeight:1.45}}>
+                  <span style={{fontWeight:700, flexShrink:0}}>✓</span><span>{x}</span>
+                </div>
+              ))}
+            </Card>
+            <Card color={HEX.orange} style={{background:"#FFF4E8", border:`1px solid ${HEX.orange}40`}}>
+              <Sub style={{marginBottom:6, color:"#b85500"}}>What We're Not Measuring Yet</Sub>
+              <p style={{fontSize:12, color:"#b85500", lineHeight:1.65, marginBottom:10}}>
+                These are real metrics worth tracking eventually, but they require infrastructure
+                or community that doesn't exist yet. Tracking them now creates noise, not signal.
+              </p>
+              {[
+                "LinkedIn follower count — meaningful only once there's a regular publishing cadence",
+                "Email open rates — too early and too variable to act on",
+                "Revenue in isolation — needs a vehicle and context before it tells a story",
+                "Membership conversion rates — comes after engagement is established",
+                "Any metric that would require a system we haven't built",
+              ].map((x,i) => (
+                <div key={i} style={{display:"flex", gap:8, marginBottom:6,
+                  fontSize:12, color:"#b85500", lineHeight:1.45}}>
+                  <span style={{fontWeight:700, flexShrink:0}}>·</span><span>{x}</span>
+                </div>
+              ))}
+            </Card>
+          </div>
+        </>}
+
+        {/* ══ PARTNERS ══ */}
+        {tab==="partners" && <>
+          <Display>Partner and Sponsor Ask System</Display>
+          <Rule color={HEX.orange}/>
+
+          <LeaveBehind/>
+
+          <Card style={{marginBottom:16}}>
+            <Sub style={{marginBottom:8}}>Corporate Pipeline Tracker</Sub>
+            <p style={{fontSize:12, color:N.muted, marginBottom:14}}>
+              Fundraising Lead owns this. Updated same day as every conversation.
+              In the shared workspace so all Leads have visibility.
+            </p>
+            <Tbl headers={["Company","Contact","Warmth","Source","Ask Made","Response","Commitment","Next Step","Date"]} rows={[
+              ["[Company]","[Name]","Hot/Warm/Cold","Network / LSC / Referral","Tier 1–5","Yes/Pending/No","Forward / Attend / Sponsor","Send info / Follow up","[Date]"],
+              ["...","...","...","...","...","...","...","...","..."],
+            ]}/>
+          </Card>
+
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:14}}>
+            <Card>
+              <Sub style={{marginBottom:14}}>Aspirational Programs — Phase 2 and Beyond</Sub>
+              {[
+                {idea:"Fireside Chat Series",        color:HEX.blue,   detail:"Quarterly sessions with senior end-user leaders. Small group, real conversation, early end time. Design format in Phase 2 after Fall event is locked."},
+                {idea:"Site Tour Program",           color:HEX.green,  detail:"Facility access through corporate partners. Irreplaceable exposure for early-career engineers. Needs a corporate champion willing to open their doors."},
+                {idea:"Mentorship Pipeline",         color:HEX.teal,   detail:"Multi-generational model: senior leader to emerging professional to aspiring student. Explore the Project Onramp connection on August 5."},
+                {idea:"Management Gap Programming",  color:HEX.orange, detail:"Leadership development for technical professionals. High demand, almost no existing programming options."},
+                {idea:"Headshots and Haircuts Pop-Up",color:"#7C3AED", detail:"Practical career event — photographer and barber, potentially at the ISPE Symposium. Tangible value that creates real word-of-mouth."},
+                {idea:"ISPE Partnership",            color:HEX.blue,   detail:"Position ISPE as an amplifier. If their early-career members want LSC event access, that's a clean parallel win."},
+              ].map((item,i) => (
+                <div key={i} style={{
+                  display:"flex", gap:12, marginBottom:11, paddingBottom:11,
+                  borderBottom:i<5?`1px solid ${N.stone}`:"none",
+                }}>
+                  <div style={{width:3, borderRadius:2, background:item.color,
+                    flexShrink:0, alignSelf:"stretch"}}/>
+                  <div>
+                    <p style={{fontSize:12, fontWeight:700, color:N.ink}}>{item.idea}</p>
+                    <p style={{fontSize:11, color:N.muted, marginTop:3, lineHeight:1.55}}>{item.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </Card>
+
+            <Card>
+              <Sub style={{marginBottom:14}}>10 Actions This Week</Sub>
+              {[
+                "Create the shared Notion workspace: member list, roles, event calendar, sponsor tracker",
+                "Send welcome message to full interest list — introduce Lead vs. Member, invite self-selection",
+                "Schedule the founding committee meeting: March or early April, 45 min",
+                "Set up biweekly standing check-in with Lexi Simchak",
+                "Get discounted ticket link for April 22 Impact Reception from Lexi",
+                "Coordinate 2 to 5 people for March 27 Career Fair — first group showing",
+                "Start the corporate target list: 10 names with warmth ratings from personal network",
+                "Draft the committee overview doc: one page, what we are, how to get involved",
+                "Identify strongest Fundraising Lead candidate — make one call this week",
+                "Write down top 3 Fall event format ideas — bring to founding meeting",
+              ].map((task,i) => (
+                <div key={i} style={{display:"flex", gap:10, marginBottom:9, alignItems:"flex-start"}}>
+                  <div style={{
+                    background:HEX.green, color:"#fff",
+                    borderRadius:"50%", width:22, height:22,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    fontSize:10, fontWeight:700, flexShrink:0, marginTop:1,
+                  }}>{i+1}</div>
+                  <div>
+                    <p style={{fontSize:12, color:N.mid, lineHeight:1.45}}>{task}</p>
+                    <p style={{fontSize:10, color:N.muted, marginTop:1}}>Owner: Dan</p>
+                  </div>
+                </div>
+              ))}
+            </Card>
+          </div>
+        </>}
+
+      </div>
+
+      {/* FOOTER */}
+      <div style={{
+        background:N.ink, padding:"16px 24px",
+        display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+      }}>
+        {Object.values(HEX).map((c,i) => <Dot key={i} color={c}/>)}
+        <span style={{fontSize:11, color:"#78716C", marginLeft:8}}>
+          Life Science Cares Philadelphia · Emerging Leaders Committee · Founding Plan 2026 · Dan Hall, Chair
+        </span>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById("root"));
+</script>
+</body>
+</html>
