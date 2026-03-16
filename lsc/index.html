@@ -84,7 +84,6 @@ nav {
   transition: color 0.15s;
 }
 .nav-items a:hover { color: var(--ink); }
-/* LSC identity: red nav active state */
 .nav-current {
   font-size: 12px;
   font-weight: 600;
@@ -156,7 +155,6 @@ nav {
   gap: 10px;
   margin-bottom: 16px;
 }
-/* LSC identity: red label line */
 .label-line {
   width: 24px; height: 1px;
   background: var(--red);
@@ -177,23 +175,21 @@ nav {
   letter-spacing: -1.5px;
   color: var(--ink);
 }
-.section-title .red  { font-style: italic; color: var(--red); }
-.section-title .blue { font-style: italic; color: var(--blue); }
+.section-title .lsc { font-style: italic; color: var(--red); }
 
-/* ─── HERO / MISSION ─── */
-.mission-section {
+/* ─── HERO ─── */
+.hero {
   min-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 64px 80px;
+  padding: 60px 64px 80px;
   position: relative;
   border-bottom: 1px solid var(--parchment);
   overflow: hidden;
-  padding-top: 60px;
 }
 
-.mission-bg-text {
+.hero-bg-text {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -210,12 +206,12 @@ nav {
   line-height: 1;
 }
 
-.mission-content {
+.hero-content {
   position: relative;
   max-width: 1080px;
 }
 
-.mission-overline {
+.hero-overline {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -223,14 +219,13 @@ nav {
   opacity: 0;
   animation: rise 0.8s ease 0.1s forwards;
 }
-/* LSC identity: red dot */
-.mission-dot {
+.hero-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--red);
   flex-shrink: 0;
 }
-.mission-overline-text {
+.hero-overline-text {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 2.5px;
@@ -238,37 +233,44 @@ nav {
   color: var(--muted);
 }
 
-.mission-h1 {
+.hero-h1 {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(52px, 8vw, 110px);
   font-weight: 300;
   line-height: 0.97;
   letter-spacing: -2.5px;
   color: var(--ink);
-  margin-bottom: 36px;
+  margin-bottom: 40px;
   opacity: 0;
   animation: rise 0.9s ease 0.25s forwards;
 }
-.mission-h1 .red { font-style: italic; color: var(--red); }
+.hero-h1 .lsc { font-style: italic; color: var(--red); }
 
-.mission-sub {
+.hero-missions {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
-  gap: 40px;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  max-width: 640px;
   opacity: 0;
   animation: rise 0.9s ease 0.45s forwards;
 }
 
-.mission-desc {
-  font-size: 16px;
+.mission-block-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 7px;
+}
+.mission-block-text {
+  font-size: 14px;
   font-weight: 300;
   color: var(--mid);
-  line-height: 1.8;
-  max-width: 580px;
+  line-height: 1.75;
 }
 
-.mission-scroll {
+.hero-scroll {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -277,7 +279,11 @@ nav {
   font-size: 11px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding-bottom: 4px;
+  position: absolute;
+  bottom: 80px;
+  right: 64px;
+  opacity: 0;
+  animation: rise 0.9s ease 0.6s forwards;
 }
 .scroll-line {
   width: 1px; height: 48px;
@@ -288,12 +294,13 @@ nav {
 /* ─── LSC STATS (navy section) ─── */
 .stats-section {
   background: var(--navy);
+  border-top: 3px solid var(--red);
 }
 
 .stats-inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 60px 48px 56px;
+  padding: 56px 48px 52px;
   display: grid;
   grid-template-columns: 1fr 1px 1fr 1px 1fr;
   gap: 0;
@@ -315,14 +322,13 @@ nav {
 
 .stat-num {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(52px, 6.5vw, 88px);
+  font-size: clamp(48px, 6vw, 84px);
   font-weight: 600;
   letter-spacing: -2px;
   line-height: 1;
   color: #F8F4EE;
   display: block;
 }
-
 .stat-label {
   font-size: 11px;
   font-weight: 500;
@@ -332,17 +338,15 @@ nav {
   margin-top: 10px;
   display: block;
 }
-
 .stat-sub {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 300;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   margin-top: 4px;
   display: block;
   line-height: 1.5;
 }
 
-/* LSC link strip (below stats, still navy) */
 .lsc-link-strip {
   background: var(--navy);
   border-top: 1px solid rgba(255,255,255,0.08);
@@ -350,95 +354,42 @@ nav {
 .lsc-link-inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 24px 48px;
+  padding: 22px 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 32px;
 }
 .lsc-link-copy {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   line-height: 1.5;
 }
 .lsc-link-copy strong {
   font-weight: 500;
-  color: rgba(255,255,255,0.88);
+  color: rgba(255,255,255,0.8);
 }
 .btn-lsc-site {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: transparent;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.65);
   font-family: 'Outfit', sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.2);
   text-decoration: none;
   transition: all 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.btn-lsc-site:hover {
-  border-color: rgba(255,255,255,0.55);
-  color: #fff;
-}
-
-/* ─── EMERGING LEADERS SECTION ─── */
-.el-section {
-  border-bottom: 1px solid var(--parchment);
-}
-
-.el-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  margin-top: 48px;
-  align-items: start;
-}
-
-.el-copy p {
-  font-size: 15px;
-  font-weight: 300;
-  color: var(--mid);
-  line-height: 1.85;
-  margin-bottom: 20px;
-}
-.el-copy p:last-child { margin-bottom: 0; }
-
-.el-pillars {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.el-pillar {
-  background: var(--parchment);
-  border-radius: 8px;
-  padding: 20px 24px;
-  border-left: 3px solid var(--red);
-}
-
-.el-pillar-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 6px;
-  letter-spacing: 0.1px;
-}
-
-.el-pillar-desc {
-  font-size: 13px;
-  font-weight: 300;
-  color: var(--mid);
-  line-height: 1.65;
-}
+.btn-lsc-site:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
 
 /* ─── EVENTS ─── */
 .events-section {
@@ -449,7 +400,7 @@ nav {
 .events-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
   margin-top: 40px;
 }
 
@@ -457,7 +408,7 @@ nav {
   background: var(--cream);
   border: 1px solid var(--stone);
   border-radius: 10px;
-  padding: 28px 28px 24px;
+  padding: 26px 26px 22px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -470,7 +421,7 @@ nav {
 }
 .event-card.live:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.07);
 }
 .event-card::before {
   content: '';
@@ -478,8 +429,7 @@ nav {
   top: 0; left: 0; right: 0;
   height: 3px;
 }
-/* LSC identity: red gradient on live event cards */
-.event-card.live::before  { background: linear-gradient(90deg, var(--red), #E8505C); }
+.event-card.live::before  { background: linear-gradient(90deg, var(--red), #e85464); }
 .event-card.soon::before  { background: var(--stone); }
 
 .event-date {
@@ -488,19 +438,19 @@ nav {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--red);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .event-card.soon .event-date { color: var(--muted); }
 
 .event-name {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 300;
   line-height: 1.15;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
   color: var(--ink);
-  margin-bottom: 10px;
   flex: 1;
+  margin-bottom: 16px;
 }
 
 .event-link {
@@ -512,13 +462,9 @@ nav {
   letter-spacing: 0.3px;
   color: var(--red);
   text-decoration: none;
-  margin-top: 16px;
   transition: gap 0.15s;
 }
-.event-card.soon .event-link {
-  color: var(--muted);
-  pointer-events: none;
-}
+.event-card.soon .event-link { color: var(--muted); pointer-events: none; }
 .event-card.live:hover .event-link { gap: 10px; }
 
 /* ─── COMMITTEE ─── */
@@ -526,105 +472,119 @@ nav {
   border-bottom: 1px solid var(--parchment);
 }
 
-.committee-layout {
+/* Leads */
+.roles-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-top: 48px;
-  align-items: start;
+  gap: 12px;
+  margin-top: 36px;
 }
 
-.member-card {
+.role-card {
+  border-radius: 10px;
+  padding: 24px 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.role-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.role-card.filled {
   background: var(--parchment);
   border: 1px solid var(--stone);
-  border-radius: 10px;
-  padding: 32px 28px 28px;
 }
-
-.member-role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
-  color: var(--red);
-  margin-bottom: 14px;
-}
-.member-role-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-}
-
-.member-name {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: -0.5px;
-  color: var(--ink);
-  line-height: 1.1;
-  margin-bottom: 8px;
-}
-
-.member-title {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--mid);
-  line-height: 1.5;
-  margin-bottom: 4px;
-}
-.member-company { font-weight: 500; color: var(--ink); }
-
-.member-linkedin {
-  display: inline-block;
-  margin-top: 18px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: var(--red);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-.member-linkedin:hover { color: var(--ink); }
-
-.recruit-card {
+.role-card.filled::before { background: linear-gradient(90deg, var(--red), #e85464); }
+.role-card.open {
+  background: var(--cream);
   border: 1.5px dashed var(--stone);
-  border-radius: 10px;
-  padding: 32px 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
 }
+.role-card.open::before { background: var(--stone); }
 
-.recruit-label {
-  font-size: 10px;
-  font-weight: 600;
+.role-status {
+  font-size: 9px;
+  font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--muted);
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 10px;
 }
+.filled-badge { background: rgba(200,32,47,0.10); color: var(--red); }
+.open-badge   { background: var(--parchment); color: var(--muted); }
 
-.recruit-text {
+.role-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 300;
-  line-height: 1.2;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
   color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 6px;
 }
-
-.recruit-sub {
+.role-name {
   font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.role-org {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--mid);
+}
+.role-desc {
+  font-size: 12px;
   font-weight: 300;
   color: var(--mid);
-  line-height: 1.7;
+  line-height: 1.6;
+}
+.role-linkedin {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--red);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.role-linkedin:hover { color: var(--ink); }
+
+/* Members */
+.members-block {
+  margin-top: 56px;
+  padding-top: 48px;
+  border-top: 1px solid var(--parchment);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
 }
 
-.recruit-link {
+.members-copy h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.8px;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.members-copy h3 .lsc { font-style: italic; color: var(--red); }
+
+.members-copy p {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.members-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -633,14 +593,35 @@ nav {
   letter-spacing: 0.3px;
   color: var(--red);
   text-decoration: none;
-  margin-top: 4px;
   transition: color 0.15s;
 }
-.recruit-link:hover { color: var(--ink); }
+.members-link:hover { color: var(--ink); }
+
+.members-aside {
+  background: var(--parchment);
+  border-radius: 10px;
+  border-left: 3px solid var(--red);
+  padding: 28px 28px 24px;
+}
+.members-aside-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+.members-aside p {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.75;
+}
 
 /* ─── GET INVOLVED CTA ─── */
 .cta-section {
   background: var(--navy);
+  border-top: 3px solid var(--red);
 }
 
 .cta-inner {
@@ -650,7 +631,7 @@ nav {
 }
 
 .cta-inner .section-label .label-line { background: var(--red); }
-.cta-inner .section-label .label-text { color: rgba(255,255,255,0.55); }
+.cta-inner .section-label .label-text { color: rgba(255,255,255,0.5); }
 
 .cta-headline {
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -661,20 +642,20 @@ nav {
   color: #F8F4EE;
   margin-bottom: 16px;
 }
-.cta-headline .red { font-style: italic; color: #E8505C; }
+.cta-headline .lsc { font-style: italic; color: var(--red); }
 
 .cta-sub {
   font-size: 15px;
   font-weight: 300;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.5);
   line-height: 1.75;
-  max-width: 520px;
-  margin-bottom: 40px;
+  max-width: 480px;
+  margin-bottom: 36px;
 }
 
 .cta-buttons {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
@@ -694,29 +675,126 @@ nav {
   transition: all 0.15s;
   white-space: nowrap;
 }
-.btn-primary:hover { background: #a81825; transform: translateY(-1px); }
+.btn-primary:hover { background: #a01825; transform: translateY(-1px); }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: transparent;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.75);
   font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.2px;
   padding: 14px 28px;
   border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.2);
   text-decoration: none;
   transition: all 0.15s;
   white-space: nowrap;
 }
-.btn-secondary:hover {
-  border-color: rgba(255,255,255,0.55);
-  color: #fff;
+.btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+/* ─── EXPLORE / THE WORK ─── */
+.explore-section { background: var(--navy); }
+
+.explore-header {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 80px 48px 52px;
 }
+.explore-header .label-line { background: var(--red); }
+.explore-header .label-text { color: rgba(255,255,255,0.7); }
+.explore-header .section-title { color: #F8F4EE; }
+.explore-header .section-title .red { color: var(--red); }
+
+.explore-cards-bg { background: var(--cream); }
+
+.explore-grid {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 52px 48px 96px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.explore-card {
+  background: var(--cream);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  padding: 28px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+.explore-card.live {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.explore-card.live:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.09);
+}
+.explore-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.explore-card.live::before { background: linear-gradient(90deg, var(--red), #e85464); }
+.explore-card.soon::before { background: var(--stone); }
+
+.explore-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  color: var(--red);
+}
+.explore-card.soon .explore-tag { color: var(--muted); }
+
+.explore-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.explore-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.7;
+  margin-bottom: 22px;
+  flex: 1;
+}
+
+.explore-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  transition: gap 0.15s;
+  color: var(--red);
+}
+.explore-card.soon .explore-link {
+  color: var(--muted);
+  cursor: default;
+  pointer-events: none;
+}
+.explore-card.live:hover .explore-link { gap: 14px; }
 
 /* ─── FOOTER ─── */
 footer {
@@ -767,16 +845,16 @@ footer {
   .nav-items { display: none; }
   .nav-hamburger { display: flex; }
 
-  .mission-section { padding: 0 24px 60px; min-height: 85svh; padding-top: 60px; }
-  .mission-bg-text { font-size: clamp(100px, 28vw, 180px); letter-spacing: -3px; }
-  .mission-h1 { font-size: clamp(48px, 12vw, 80px); letter-spacing: -2px; }
-  .mission-sub { grid-template-columns: 1fr; }
-  .mission-scroll { display: none; }
+  .hero { padding: 60px 24px 60px; min-height: 85svh; }
+  .hero-bg-text { font-size: clamp(100px, 28vw, 180px); letter-spacing: -3px; }
+  .hero-h1 { font-size: clamp(48px, 12vw, 80px); letter-spacing: -2px; }
+  .hero-missions { grid-template-columns: 1fr; gap: 20px; }
+  .hero-scroll { display: none; }
 
   .stats-inner {
     grid-template-columns: 1fr;
     gap: 32px;
-    padding: 48px 24px 52px;
+    padding: 44px 24px 48px;
   }
   .stat-divider { display: none; }
   .stat-item { padding: 0; }
@@ -785,16 +863,16 @@ footer {
     border-top: 1px solid rgba(255,255,255,0.1);
   }
 
-  .lsc-link-inner { flex-direction: column; align-items: flex-start; padding: 24px; gap: 14px; }
+  .lsc-link-inner { flex-direction: column; align-items: flex-start; padding: 20px 24px; gap: 12px; }
   .btn-lsc-site { width: 100%; justify-content: center; }
 
   .section-wrap { padding: 64px 24px; }
-
-  .el-body { grid-template-columns: 1fr; gap: 40px; }
-
   .events-grid { grid-template-columns: 1fr; }
+  .roles-grid { grid-template-columns: 1fr; }
+  .members-block { grid-template-columns: 1fr; gap: 32px; }
 
-  .committee-layout { grid-template-columns: 1fr; }
+  .explore-header { padding: 56px 24px 40px; }
+  .explore-grid { grid-template-columns: 1fr; padding: 0 24px 64px; }
 
   .cta-inner { padding: 60px 24px 72px; }
   .cta-buttons { flex-direction: column; }
@@ -831,109 +909,64 @@ footer {
 </div>
 
 <!-- HERO -->
-<section class="mission-section">
-  <div class="mission-bg-text">LSC</div>
-  <div class="mission-content">
-    <div class="mission-overline">
-      <div class="mission-dot"></div>
-      <span class="mission-overline-text">Life Science Cares Philadelphia · Emerging Leaders Committee</span>
+<section class="hero">
+  <div class="hero-bg-text">LSC</div>
+  <div class="hero-content">
+    <div class="hero-overline">
+      <div class="hero-dot"></div>
+      <span class="hero-overline-text">Life Science Cares Philadelphia · Emerging Leaders Committee</span>
     </div>
-    <h1 class="mission-h1">
+    <h1 class="hero-h1">
       Showing up<br>
-      for our <span class="red">neighbors.</span>
+      for our <span class="lsc">neighbors.</span>
     </h1>
-    <div class="mission-sub">
-      <p class="mission-desc">
-        Philadelphia's life sciences community, showing up for our neighbors. We mobilize biotech, pharma, and healthcare leaders to fight poverty through grantmaking, hands-on service, and career pathways that expand opportunity.
-      </p>
-      <div class="mission-scroll">
-        <div class="scroll-line"></div>
-        <span>Scroll</span>
+    <div class="hero-missions">
+      <div class="mission-block">
+        <div class="mission-block-label">Life Science Cares Philadelphia</div>
+        <p class="mission-block-text">Mobilizing the life sciences industry to fight poverty through grantmaking, hands-on service, and career pathways that expand opportunity.</p>
+      </div>
+      <div class="mission-block">
+        <div class="mission-block-label">Emerging Leaders Committee</div>
+        <p class="mission-block-text">The early-career pipeline for that mission — recruiting, organizing, and activating the next generation of professionals who want to give back.</p>
       </div>
     </div>
   </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
 </section>
 
-<!-- LSC PHILADELPHIA STATS -->
+<!-- LSC STATS -->
 <section class="stats-section">
   <div class="stats-inner">
-
     <div class="stat-item reveal">
       <span class="stat-num">$1.65M</span>
       <span class="stat-label">Invested in Nonprofits</span>
       <span class="stat-sub">In Philadelphia since 2019</span>
     </div>
-
     <div class="stat-divider"></div>
-
     <div class="stat-item reveal">
       <span class="stat-num">5,000+</span>
       <span class="stat-label">Volunteer Hours</span>
       <span class="stat-sub">Delivered 2022–2025</span>
     </div>
-
     <div class="stat-divider"></div>
-
     <div class="stat-item reveal">
       <span class="stat-num">440</span>
       <span class="stat-label">Students Supported</span>
-      <span class="stat-sub">Through mentorship and paid internships</span>
+      <span class="stat-sub">Mentorship and paid internships</span>
     </div>
-
   </div>
 </section>
 
-<!-- LSC ORG LINK STRIP -->
+<!-- LSC ORG LINK -->
 <div class="lsc-link-strip">
   <div class="lsc-link-inner">
-    <p class="lsc-link-copy"><strong>Life Science Cares Philadelphia</strong> is a regional coalition connecting the life sciences industry to high-impact nonprofits across the city.</p>
+    <p class="lsc-link-copy"><strong>Life Science Cares Philadelphia</strong> — connecting the life sciences industry to high-impact nonprofits across the city.</p>
     <a href="https://lifesciencecares.org/philly/" target="_blank" rel="noopener" class="btn-lsc-site">Visit LSC Philadelphia →</a>
   </div>
 </div>
-
-<!-- EMERGING LEADERS COMMITTEE -->
-<section class="el-section">
-  <div class="section-wrap">
-    <div class="section-label reveal">
-      <div class="label-line"></div>
-      <span class="label-text">Emerging Leaders</span>
-    </div>
-    <h2 class="section-title reveal">
-      Early-career professionals.<br>
-      Real <span class="red">civic impact.</span>
-    </h2>
-    <div class="el-body">
-
-      <div class="el-copy reveal">
-        <p>
-          The Life Science Cares Philadelphia Emerging Leaders Committee is a newly forming group dedicated to activating early-career professionals in biotech, pharma, and healthcare around LSC's mission. We believe the next generation of life sciences leaders shouldn't wait until they're senior to start giving back — the time to build that habit is now.
-        </p>
-        <p>
-          The committee is in its founding phase, focused on building a community of engaged emerging professionals who show up for LSC events, take on volunteer roles, and help grow the organization's reach across the Philadelphia region.
-        </p>
-        <p>
-          If you're early in your career and want to connect with purpose-driven peers, develop civic leadership skills, and make a tangible difference in Philadelphia — this committee is being built for you.
-        </p>
-      </div>
-
-      <div class="el-pillars reveal">
-        <div class="el-pillar">
-          <div class="el-pillar-title">Show up at events</div>
-          <div class="el-pillar-desc">Attend LSC Philadelphia's signature events — leadership lunches, service days, receptions — and become part of a community that cares about this city.</div>
-        </div>
-        <div class="el-pillar">
-          <div class="el-pillar-title">Take on volunteer roles</div>
-          <div class="el-pillar-desc">Help plan and execute the Emerging Leaders signature event. Represent early-career professionals within the broader LSC Philadelphia structure.</div>
-        </div>
-        <div class="el-pillar">
-          <div class="el-pillar-title">Build your network with purpose</div>
-          <div class="el-pillar-desc">Connect with peers across biotech, pharma, and healthcare who are building their careers and their communities at the same time.</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
 
 <!-- 2026 EVENTS -->
 <section class="events-section" id="events">
@@ -943,8 +976,7 @@ footer {
       <span class="label-text">2026 Events</span>
     </div>
     <h2 class="section-title reveal">
-      The calendar.<br>
-      Come find <span class="red">us.</span>
+      Come find <span class="lsc">us.</span>
     </h2>
     <div class="events-grid">
 
@@ -979,38 +1011,102 @@ footer {
 <!-- COMMITTEE -->
 <section class="committee-section" id="committee">
   <div class="section-wrap">
+
+    <!-- Leads -->
     <div class="section-label reveal">
       <div class="label-line"></div>
-      <span class="label-text">The Committee</span>
+      <span class="label-text">Committee Leads</span>
     </div>
     <h2 class="section-title reveal">
-      Founded in 2026.<br>
-      <span class="red">Recruiting now.</span>
+      Five founding roles.<br>
+      <span class="lsc">Four still open.</span>
     </h2>
-    <div class="committee-layout">
 
-      <div class="member-card reveal">
-        <div class="member-role-badge">
-          <div class="member-role-dot"></div>
-          Chair · Founding
-        </div>
-        <div class="member-name">Dan Hall</div>
-        <div class="member-title">Business Development Manager · <span class="member-company">Zeta USA</span></div>
-        <a href="https://www.linkedin.com/in/daniel-hall-/" target="_blank" rel="noopener" class="member-linkedin">Connect on LinkedIn →</a>
+    <div class="roles-grid">
+
+      <div class="role-card filled reveal">
+        <span class="role-status filled-badge">Filled</span>
+        <div class="role-title">Chair</div>
+        <div class="role-name">Dan Hall</div>
+        <div class="role-org">Business Development Manager · Zeta USA</div>
+        <a href="https://www.linkedin.com/in/daniel-hall-/" target="_blank" rel="noopener" class="role-linkedin">Connect on LinkedIn →</a>
       </div>
 
-      <div class="recruit-card reveal">
-        <div class="recruit-label">Join the committee</div>
-        <div class="recruit-text">We're building this committee now.</div>
-        <p class="recruit-sub">
-          We're looking for early-career professionals in the Philadelphia life sciences community who want to take an active role in LSC's mission. No prior experience required — just genuine interest in showing up and contributing.
-        </p>
-        <a href="mailto:daniel.hall@zeta.com" class="recruit-link">Get in touch with Dan →</a>
+      <div class="role-card open reveal">
+        <span class="role-status open-badge">Open</span>
+        <div class="role-title">Fundraising Lead</div>
+        <div class="role-desc">Own the corporate outreach and fundraising relationships for LSC Philadelphia events and initiatives.</div>
       </div>
+
+      <div class="role-card open reveal">
+        <span class="role-status open-badge">Open</span>
+        <div class="role-title">Volunteer Coordinator</div>
+        <div class="role-desc">Recruit and manage volunteers for LSC service events and community programming.</div>
+      </div>
+
+      <div class="role-card open reveal">
+        <span class="role-status open-badge">Open</span>
+        <div class="role-title">Communications Lead</div>
+        <div class="role-desc">Build the committee's voice — social media, event promotion, and storytelling in the region.</div>
+      </div>
+
+      <div class="role-card open reveal">
+        <span class="role-status open-badge">Open</span>
+        <div class="role-title">Events Lead</div>
+        <div class="role-desc">Plan the Emerging Leaders signature event and coordinate involvement in LSC Philadelphia programming.</div>
+      </div>
+
+    </div>
+
+    <!-- Members -->
+    <div class="members-block reveal">
+      <div class="members-copy">
+        <h3>You don't need a title<br>to be part of <span class="lsc">this.</span></h3>
+        <p>Members show up at LSC Philadelphia events as a group, represent the committee in the community, and plug into the work however makes sense for them. No formal role, no application.</p>
+        <a href="mailto:daniel.hall@zeta.com" class="members-link">Get in touch with Dan →</a>
+      </div>
+      <div class="members-aside">
+        <div class="members-aside-label">What members do</div>
+        <p>Attend LSC events together. Represent emerging professionals in the Philadelphia life sciences community. Show up, make connections, and help grow something worth being part of.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- THE WORK -->
+<div id="explore">
+  <div class="explore-section">
+    <div class="explore-header reveal">
+      <div class="section-label">
+        <div class="label-line"></div>
+        <span class="label-text">Our Roadmap</span>
+      </div>
+      <h2 class="section-title">
+        The <span class="red">work.</span>
+      </h2>
+    </div>
+  </div>
+  <div class="explore-cards-bg">
+    <div class="explore-grid reveal">
+
+      <a class="explore-card live" href="../lsc_el_masterplan_v5.html">
+        <div class="explore-tag">Strategy</div>
+        <div class="explore-name">90-Day<br>Roadmap</div>
+        <p class="explore-desc">The committee's active 90-day plan — recruiting leads, building LSC Philadelphia engagement, and running the Emerging Leaders signature event.</p>
+        <span class="explore-link">View the roadmap →</span>
+      </a>
+
+      <a class="explore-card live" href="https://lifesciencecares.org/philly/philadelphia-events/" target="_blank" rel="noopener">
+        <div class="explore-tag">Events</div>
+        <div class="explore-name">Event<br>Schedule</div>
+        <p class="explore-desc">All 2026 LSC Philadelphia events — registration and details on the Life Science Cares Philadelphia site.</p>
+        <span class="explore-link">View events →</span>
+      </a>
 
     </div>
   </div>
-</section>
+</div>
 
 <!-- GET INVOLVED CTA -->
 <section class="cta-section" id="get-involved">
@@ -1021,14 +1117,14 @@ footer {
     </div>
     <h2 class="cta-headline">
       Ready to show<br>
-      <span class="red">up?</span>
+      <span class="lsc">up?</span>
     </h2>
     <p class="cta-sub">
-      Whether you want to attend an event, join the committee, or just learn more about what Life Science Cares Philadelphia is building — reach out. We'd love to hear from you.
+      The detail is in the plan. The door is open now.
     </p>
     <div class="cta-buttons">
-      <a href="mailto:daniel.hall@zeta.com" class="btn-primary">Get in Touch →</a>
-      <a href="https://lifesciencecares.org/philly/philadelphia-events/" target="_blank" rel="noopener" class="btn-secondary">View All LSC Events →</a>
+      <a href="../lsc_el_masterplan_v5.html" class="btn-primary">View the 90-Day Plan →</a>
+      <a href="https://lifesciencecares.org/philly/philadelphia-events/" target="_blank" rel="noopener" class="btn-secondary">View Event Schedule →</a>
     </div>
   </div>
 </section>
