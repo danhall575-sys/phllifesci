@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Science Cares Philadelphia — Emerging Leaders Committee · phllifesci.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:     #F8F4EE;
+  --parchment: #EDE8DF;
+  --stone:     #D8D2C8;
+  --ink:       #1A1714;
+  --mid:       #4A4440;
+  --muted:     #8C857C;
+  --red:       #C8202F;
+  --blue:      #1B4DB8;
+  --navy:      #1B3A6B;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 60px;
+  background: rgba(248,244,238,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--parchment);
+}
+
+.wordmark {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+.wordmark .red { color: var(--red); }
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+}
+.nav-items a {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-items a:hover { color: var(--ink); }
+/* LSC identity: red nav active state */
+.nav-current {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 2px;
+  z-index: 510;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0; right: 0;
+  background: rgba(248,244,238,0.97);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--parchment);
+  padding: 8px 24px 24px;
+  z-index: 490;
+  flex-direction: column;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav a {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--parchment);
+  transition: color 0.15s;
+}
+.mobile-nav a:last-child { border-bottom: none; }
+.mobile-nav a:hover { color: var(--red); }
+
+/* ─── SECTION SCAFFOLD ─── */
+.section-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 96px 48px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+/* LSC identity: red label line */
+.label-line {
+  width: 24px; height: 1px;
+  background: var(--red);
+}
+.label-text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(44px, 5.5vw, 72px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--ink);
+}
+.section-title .red  { font-style: italic; color: var(--red); }
+.section-title .blue { font-style: italic; color: var(--blue); }
+
+/* ─── HERO / MISSION ─── */
+.mission-section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 64px 80px;
+  position: relative;
+  border-bottom: 1px solid var(--parchment);
+  overflow: hidden;
+  padding-top: 60px;
+}
+
+.mission-bg-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(160px, 22vw, 320px);
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--stone);
+  letter-spacing: -6px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.mission-content {
+  position: relative;
+  max-width: 1080px;
+}
+
+.mission-overline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: rise 0.8s ease 0.1s forwards;
+}
+/* LSC identity: red dot */
+.mission-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+.mission-overline-text {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mission-h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(52px, 8vw, 110px);
+  font-weight: 300;
+  line-height: 0.97;
+  letter-spacing: -2.5px;
+  color: var(--ink);
+  margin-bottom: 36px;
+  opacity: 0;
+  animation: rise 0.9s ease 0.25s forwards;
+}
+.mission-h1 .red { font-style: italic; color: var(--red); }
+
+.mission-sub {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 40px;
+  opacity: 0;
+  animation: rise 0.9s ease 0.45s forwards;
+}
+
+.mission-desc {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.8;
+  max-width: 580px;
+}
+
+.mission-scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--stone);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+}
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, var(--stone), transparent);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ─── LSC STATS (navy section) ─── */
+.stats-section {
+  background: var(--navy);
+}
+
+.stats-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 60px 48px 56px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  gap: 0;
+  align-items: center;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 64px;
+  background: rgba(255,255,255,0.12);
+  align-self: center;
+}
+
+.stat-item {
+  padding: 0 48px;
+}
+.stat-item:first-child { padding-left: 0; }
+.stat-item:last-child  { padding-right: 0; }
+
+.stat-num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(52px, 6.5vw, 88px);
+  font-weight: 600;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: #F8F4EE;
+  display: block;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-top: 10px;
+  display: block;
+}
+
+.stat-sub {
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+  display: block;
+  line-height: 1.5;
+}
+
+/* LSC link strip (below stats, still navy) */
+.lsc-link-strip {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.lsc-link-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.lsc-link-copy {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+}
+.lsc-link-copy strong {
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+}
+.btn-lsc-site {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.25);
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-lsc-site:hover {
+  border-color: rgba(255,255,255,0.55);
+  color: #fff;
+}
+
+/* ─── EMERGING LEADERS SECTION ─── */
+.el-section {
+  border-bottom: 1px solid var(--parchment);
+}
+
+.el-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  margin-top: 48px;
+  align-items: start;
+}
+
+.el-copy p {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.85;
+  margin-bottom: 20px;
+}
+.el-copy p:last-child { margin-bottom: 0; }
+
+.el-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.el-pillar {
+  background: var(--parchment);
+  border-radius: 8px;
+  padding: 20px 24px;
+  border-left: 3px solid var(--red);
+}
+
+.el-pillar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: 0.1px;
+}
+
+.el-pillar-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.65;
+}
+
+/* ─── EVENTS ─── */
+.events-section {
+  background: var(--parchment);
+  border-bottom: 1px solid var(--stone);
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.event-card {
+  background: var(--cream);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+.event-card.live {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.event-card.live:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+/* LSC identity: red gradient on live event cards */
+.event-card.live::before  { background: linear-gradient(90deg, var(--red), #E8505C); }
+.event-card.soon::before  { background: var(--stone); }
+
+.event-date {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+.event-card.soon .event-date { color: var(--muted); }
+
+.event-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 10px;
+  flex: 1;
+}
+
+.event-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--red);
+  text-decoration: none;
+  margin-top: 16px;
+  transition: gap 0.15s;
+}
+.event-card.soon .event-link {
+  color: var(--muted);
+  pointer-events: none;
+}
+.event-card.live:hover .event-link { gap: 10px; }
+
+/* ─── COMMITTEE ─── */
+.committee-section {
+  border-bottom: 1px solid var(--parchment);
+}
+
+.committee-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 48px;
+  align-items: start;
+}
+
+.member-card {
+  background: var(--parchment);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  padding: 32px 28px 28px;
+}
+
+.member-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 14px;
+}
+.member-role-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.member-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.member-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--mid);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.member-company { font-weight: 500; color: var(--ink); }
+
+.member-linkedin {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--red);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.member-linkedin:hover { color: var(--ink); }
+
+.recruit-card {
+  border: 1.5px dashed var(--stone);
+  border-radius: 10px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.recruit-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.recruit-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+
+.recruit-sub {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.7;
+}
+
+.recruit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--red);
+  text-decoration: none;
+  margin-top: 4px;
+  transition: color 0.15s;
+}
+.recruit-link:hover { color: var(--ink); }
+
+/* ─── GET INVOLVED CTA ─── */
+.cta-section {
+  background: var(--navy);
+}
+
+.cta-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 80px 48px 88px;
+}
+
+.cta-inner .section-label .label-line { background: var(--red); }
+.cta-inner .section-label .label-text { color: rgba(255,255,255,0.55); }
+
+.cta-headline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(44px, 5.5vw, 72px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: #F8F4EE;
+  margin-bottom: 16px;
+}
+.cta-headline .red { font-style: italic; color: #E8505C; }
+
+.cta-sub {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--red);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 14px 28px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: #a81825; transform: translateY(-1px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,0.8);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 14px 28px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.25);
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.55);
+  color: #fff;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--parchment);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-left {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+.footer-left .red { color: var(--red); }
+.footer-center { font-size: 11px; color: var(--muted); letter-spacing: 0.3px; }
+.footer-right { display: flex; gap: 28px; }
+.footer-right a {
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.footer-right a:hover { color: var(--ink); }
+
+/* ─── ANIMATIONS ─── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.75s ease, transform 0.75s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 800px) {
+  nav { padding: 0 24px; }
+  .nav-items { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .mission-section { padding: 0 24px 60px; min-height: 85svh; padding-top: 60px; }
+  .mission-bg-text { font-size: clamp(100px, 28vw, 180px); letter-spacing: -3px; }
+  .mission-h1 { font-size: clamp(48px, 12vw, 80px); letter-spacing: -2px; }
+  .mission-sub { grid-template-columns: 1fr; }
+  .mission-scroll { display: none; }
+
+  .stats-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 48px 24px 52px;
+  }
+  .stat-divider { display: none; }
+  .stat-item { padding: 0; }
+  .stat-item + .stat-item {
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .lsc-link-inner { flex-direction: column; align-items: flex-start; padding: 24px; gap: 14px; }
+  .btn-lsc-site { width: 100%; justify-content: center; }
+
+  .section-wrap { padding: 64px 24px; }
+
+  .el-body { grid-template-columns: 1fr; gap: 40px; }
+
+  .events-grid { grid-template-columns: 1fr; }
+
+  .committee-layout { grid-template-columns: 1fr; }
+
+  .cta-inner { padding: 60px 24px 72px; }
+  .cta-buttons { flex-direction: column; }
+  .btn-primary, .btn-secondary { justify-content: center; }
+
+  footer { flex-direction: column; gap: 14px; text-align: center; padding: 24px; }
+  .footer-right { justify-content: center; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="wordmark">phl<span class="red">life</span>sci</a>
+  <ul class="nav-items">
+    <li><a href="../index.html">Home</a></li>
+    <li><span class="nav-current">LSC Committee</span></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#committee">Committee</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="../index.html" class="mobile-link">Home</a>
+  <a href="#events" class="mobile-link">Events</a>
+  <a href="#committee" class="mobile-link">Committee</a>
+  <a href="#get-involved" class="mobile-link">Get Involved</a>
+</div>
+
+<!-- HERO -->
+<section class="mission-section">
+  <div class="mission-bg-text">LSC</div>
+  <div class="mission-content">
+    <div class="mission-overline">
+      <div class="mission-dot"></div>
+      <span class="mission-overline-text">Life Science Cares Philadelphia · Emerging Leaders Committee</span>
+    </div>
+    <h1 class="mission-h1">
+      Showing up<br>
+      for our <span class="red">neighbors.</span>
+    </h1>
+    <div class="mission-sub">
+      <p class="mission-desc">
+        Philadelphia's life sciences community, showing up for our neighbors. We mobilize biotech, pharma, and healthcare leaders to fight poverty through grantmaking, hands-on service, and career pathways that expand opportunity.
+      </p>
+      <div class="mission-scroll">
+        <div class="scroll-line"></div>
+        <span>Scroll</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LSC PHILADELPHIA STATS -->
+<section class="stats-section">
+  <div class="stats-inner">
+
+    <div class="stat-item reveal">
+      <span class="stat-num">$1.65M</span>
+      <span class="stat-label">Invested in Nonprofits</span>
+      <span class="stat-sub">In Philadelphia since 2019</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item reveal">
+      <span class="stat-num">5,000+</span>
+      <span class="stat-label">Volunteer Hours</span>
+      <span class="stat-sub">Delivered 2022–2025</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item reveal">
+      <span class="stat-num">440</span>
+      <span class="stat-label">Students Supported</span>
+      <span class="stat-sub">Through mentorship and paid internships</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- LSC ORG LINK STRIP -->
+<div class="lsc-link-strip">
+  <div class="lsc-link-inner">
+    <p class="lsc-link-copy"><strong>Life Science Cares Philadelphia</strong> is a regional coalition connecting the life sciences industry to high-impact nonprofits across the city.</p>
+    <a href="https://lifesciencecares.org/philly/" target="_blank" rel="noopener" class="btn-lsc-site">Visit LSC Philadelphia →</a>
+  </div>
+</div>
+
+<!-- EMERGING LEADERS COMMITTEE -->
+<section class="el-section">
+  <div class="section-wrap">
+    <div class="section-label reveal">
+      <div class="label-line"></div>
+      <span class="label-text">Emerging Leaders</span>
+    </div>
+    <h2 class="section-title reveal">
+      Early-career professionals.<br>
+      Real <span class="red">civic impact.</span>
+    </h2>
+    <div class="el-body">
+
+      <div class="el-copy reveal">
+        <p>
+          The Life Science Cares Philadelphia Emerging Leaders Committee is a newly forming group dedicated to activating early-career professionals in biotech, pharma, and healthcare around LSC's mission. We believe the next generation of life sciences leaders shouldn't wait until they're senior to start giving back — the time to build that habit is now.
+        </p>
+        <p>
+          The committee is in its founding phase, focused on building a community of engaged emerging professionals who show up for LSC events, take on volunteer roles, and help grow the organization's reach across the Philadelphia region.
+        </p>
+        <p>
+          If you're early in your career and want to connect with purpose-driven peers, develop civic leadership skills, and make a tangible difference in Philadelphia — this committee is being built for you.
+        </p>
+      </div>
+
+      <div class="el-pillars reveal">
+        <div class="el-pillar">
+          <div class="el-pillar-title">Show up at events</div>
+          <div class="el-pillar-desc">Attend LSC Philadelphia's signature events — leadership lunches, service days, receptions — and become part of a community that cares about this city.</div>
+        </div>
+        <div class="el-pillar">
+          <div class="el-pillar-title">Take on volunteer roles</div>
+          <div class="el-pillar-desc">Help plan and execute the Emerging Leaders signature event. Represent early-career professionals within the broader LSC Philadelphia structure.</div>
+        </div>
+        <div class="el-pillar">
+          <div class="el-pillar-title">Build your network with purpose</div>
+          <div class="el-pillar-desc">Connect with peers across biotech, pharma, and healthcare who are building their careers and their communities at the same time.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 2026 EVENTS -->
+<section class="events-section" id="events">
+  <div class="section-wrap">
+    <div class="section-label reveal">
+      <div class="label-line"></div>
+      <span class="label-text">2026 Events</span>
+    </div>
+    <h2 class="section-title reveal">
+      The calendar.<br>
+      Come find <span class="red">us.</span>
+    </h2>
+    <div class="events-grid">
+
+      <a class="event-card live reveal" href="https://lifesciencecares.org/philly/philadelphia-events/2026-phl-impact-reception/" target="_blank" rel="noopener">
+        <div class="event-date">April 22, 2026</div>
+        <div class="event-name">Impact Reception</div>
+        <span class="event-link">Register →</span>
+      </a>
+
+      <a class="event-card live reveal" href="https://lifesciencecares.org/philly/philadelphia-events/2026-life-science-cares-phl-bases-breakthroughs/" target="_blank" rel="noopener">
+        <div class="event-date">June 18, 2026</div>
+        <div class="event-name">Bases &amp; Breakthroughs</div>
+        <span class="event-link">Register →</span>
+      </a>
+
+      <a class="event-card live reveal" href="https://lifesciencecares.org/philly/philadelphia-events/2026-internship-showcase/" target="_blank" rel="noopener">
+        <div class="event-date">August 5, 2026</div>
+        <div class="event-name">Project Onramp Showcase</div>
+        <span class="event-link">Register →</span>
+      </a>
+
+      <div class="event-card soon reveal">
+        <div class="event-date">Fall 2026</div>
+        <div class="event-name">Emerging Leaders Signature Event</div>
+        <span class="event-link">Details coming soon</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMMITTEE -->
+<section class="committee-section" id="committee">
+  <div class="section-wrap">
+    <div class="section-label reveal">
+      <div class="label-line"></div>
+      <span class="label-text">The Committee</span>
+    </div>
+    <h2 class="section-title reveal">
+      Founded in 2026.<br>
+      <span class="red">Recruiting now.</span>
+    </h2>
+    <div class="committee-layout">
+
+      <div class="member-card reveal">
+        <div class="member-role-badge">
+          <div class="member-role-dot"></div>
+          Chair · Founding
+        </div>
+        <div class="member-name">Dan Hall</div>
+        <div class="member-title">Business Development Manager · <span class="member-company">Zeta USA</span></div>
+        <a href="https://www.linkedin.com/in/daniel-hall-/" target="_blank" rel="noopener" class="member-linkedin">Connect on LinkedIn →</a>
+      </div>
+
+      <div class="recruit-card reveal">
+        <div class="recruit-label">Join the committee</div>
+        <div class="recruit-text">We're building this committee now.</div>
+        <p class="recruit-sub">
+          We're looking for early-career professionals in the Philadelphia life sciences community who want to take an active role in LSC's mission. No prior experience required — just genuine interest in showing up and contributing.
+        </p>
+        <a href="mailto:daniel.hall@zeta.com" class="recruit-link">Get in touch with Dan →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED CTA -->
+<section class="cta-section" id="get-involved">
+  <div class="cta-inner reveal">
+    <div class="section-label">
+      <div class="label-line"></div>
+      <span class="label-text">Get Involved</span>
+    </div>
+    <h2 class="cta-headline">
+      Ready to show<br>
+      <span class="red">up?</span>
+    </h2>
+    <p class="cta-sub">
+      Whether you want to attend an event, join the committee, or just learn more about what Life Science Cares Philadelphia is building — reach out. We'd love to hear from you.
+    </p>
+    <div class="cta-buttons">
+      <a href="mailto:daniel.hall@zeta.com" class="btn-primary">Get in Touch →</a>
+      <a href="https://lifesciencecares.org/philly/philadelphia-events/" target="_blank" rel="noopener" class="btn-secondary">View All LSC Events →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="../index.html" class="footer-left">phl<span class="red">life</span>sci.com</a>
+  <div class="footer-center">Dan Hall · LSC Philadelphia · 2026</div>
+  <div class="footer-right">
+    <a href="../index.html">Home</a>
+    <a href="https://lifesciencecares.org/philly/" target="_blank" rel="noopener">LSC Philadelphia</a>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        el.classList.add('visible');
+      } else {
+        observer.observe(el);
+      }
+    });
+
+    const toggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.classList.remove('open');
+        mobileNav.classList.remove('open');
+      });
+    });
+  });
+</script>
+</body>
+</html>
