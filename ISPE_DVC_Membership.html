@@ -3,35 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ISPE DVC — Membership Committee Master Plan</title>
+<title>ISPE DVC — 90-Day Roadmap · phllifesci.com</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:     #F8F4EE;
+    --parchment: #EDE8DF;
+    --stone:     #D8D2C8;
+    --ink:       #1A1714;
+    --mid:       #4A4440;
+    --muted:     #8C857C;
+    --red:       #C8202F;
+    --blue:      #1B4DB8;
+    --navy:      #1B3A6B;
+  }
+
   body {
-    font-family: 'DM Sans', system-ui, sans-serif;
-    background: #F4F6FA;
-    color: #1C1F2E;
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
   ::-webkit-scrollbar { height: 4px; width: 4px; }
-  ::-webkit-scrollbar-thumb { background: #B8C4D8; border-radius: 4px; }
-  button { font-family: 'DM Sans', system-ui, sans-serif; }
+  ::-webkit-scrollbar-thumb { background: var(--stone); border-radius: 4px; }
+  button { font-family: 'Outfit', system-ui, sans-serif; }
+
+  /* ─── SITE NAV ─── */
+  .site-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(248,244,238,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--parchment);
+  }
+  .site-wordmark {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .site-wordmark .r { color: var(--red); }
+  .site-nav-items {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    list-style: none;
+  }
+  .site-nav-items a {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .site-nav-items a:hover { color: var(--ink); }
+  .site-nav-current {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+  .site-nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 2px;
+    z-index: 510;
+  }
+  .site-nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    transform-origin: center;
+  }
+  .site-nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .site-nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .site-nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .site-mobile-nav {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(248,244,238,0.97);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--parchment);
+    padding: 8px 24px 24px;
+    z-index: 490;
+    flex-direction: column;
+  }
+  .site-mobile-nav.open { display: flex; }
+  .site-mobile-nav a {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--parchment);
+    transition: color 0.15s;
+  }
+  .site-mobile-nav a:last-child { border-bottom: none; }
+  .site-mobile-nav a:hover { color: var(--blue); }
+
+  @media (max-width: 800px) {
+    .site-nav { padding: 0 24px; }
+    .site-nav-items { display: none; }
+    .site-nav-hamburger { display: flex; }
+  }
 </style>
 </head>
 <body>
+<!-- SITE NAV -->
+<nav class="site-nav">
+  <a href="index.html" class="site-wordmark">phl<span class="r">life</span>sci</a>
+  <ul class="site-nav-items">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="ispe/index.html">ISPE Committee</a></li>
+    <li><span class="site-nav-current">Roadmap</span></li>
+  </ul>
+  <button class="site-nav-hamburger" id="siteNavToggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="site-mobile-nav" id="siteNavMobile">
+  <a href="index.html">Home</a>
+  <a href="ispe/index.html">ISPE Committee</a>
+  <a href="#">Roadmap</a>
+</div>
+
 <div id="root"></div>
 <script type="text/babel">
 const { useState } = React;
 
 const B = {
-  navy:    "#0F2A52",
+  navy:    "#1B3A6B",
   blue:    "#1B4DB8",
-  lblue:   "#EBF0FB",
+  lblue:   "#E8EDF8",
   sky:     "#3A7BD5",
   gold:    "#B8860B",
   lgold:   "#FDF8EE",
@@ -43,13 +186,13 @@ const B = {
 };
 
 const N = {
-  bg:      "#F4F6FA",
+  bg:      "#F8F4EE",
   surface: "#FFFFFF",
-  stone:   "#E2E8F4",
-  ink:     "#1C1F2E",
-  mid:     "#3D4560",
-  muted:   "#7280A0",
-  ghost:   "#EDF0F8",
+  stone:   "#D8D2C8",
+  ink:     "#1A1714",
+  mid:     "#4A4440",
+  muted:   "#8C857C",
+  ghost:   "#EDE8DF",
 };
 
 const TABS = [
@@ -86,9 +229,9 @@ const Rule = ({color}) => (
 
 const Display = ({children, style={}}) => (
   <h2 style={{
-    fontFamily:"'DM Serif Display', Georgia, serif",
-    fontSize:26, fontWeight:400, color:N.ink,
-    letterSpacing:"-0.3px", lineHeight:1.2, ...style
+    fontFamily:"'Cormorant Garamond', Georgia, serif",
+    fontSize:30, fontWeight:300, color:N.ink,
+    letterSpacing:"-0.5px", lineHeight:1.15, ...style
   }}>{children}</h2>
 );
 
@@ -158,8 +301,8 @@ const Phase = ({num, days, color, headline, actions, owner, success, obstacle, w
             width:36, height:36, borderRadius:"50%",
             background:color, flexShrink:0,
             display:"flex", alignItems:"center", justifyContent:"center",
-            fontFamily:"'DM Serif Display',serif",
-            color:"#fff", fontSize:17,
+            fontFamily:"'Cormorant Garamond',serif",
+            color:"#fff", fontSize:20, fontWeight:400,
           }}>{num}</div>
           <div>
             <div style={{fontSize:11, fontWeight:600, color:N.muted,
@@ -212,7 +355,7 @@ function App() {
   const [tab, setTab] = useState("overview");
 
   return (
-    <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",color:N.ink,minHeight:"100vh",background:N.bg}}>
+    <div style={{fontFamily:"'Outfit',system-ui,sans-serif",color:N.ink,minHeight:"100vh",background:N.bg,paddingTop:60}}>
 
       {/* Header */}
       <div style={{background:B.navy,padding:"28px 28px 0"}}>
@@ -221,9 +364,9 @@ function App() {
             ISPE Delaware Valley Chapter · Membership Committee
           </div>
           <h1 style={{
-            fontFamily:"'DM Serif Display',Georgia,serif",
-            color:"#fff", fontSize:32, fontWeight:400,
-            lineHeight:1.2, margin:"0 0 6px",letterSpacing:"-0.3px"
+            fontFamily:"'Cormorant Garamond',Georgia,serif",
+            color:"#fff", fontSize:38, fontWeight:300,
+            lineHeight:1.1, margin:"0 0 6px",letterSpacing:"-1px"
           }}>90-Day Engagement Master Plan</h1>
           <div style={{color:"rgba(255,255,255,0.45)",fontSize:12,marginBottom:16}}>
             Engagement-First Rebuild · Q1–Q2 2026 · Dan Hall, Anthony Cicamore, Liah Osborne, Emily Kate Simard
@@ -467,7 +610,7 @@ function App() {
               <Card key={i} style={{borderTop:`4px solid ${role.color}`,marginBottom:14}}>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <Dot color={role.color}/>
-                  <h3 style={{margin:0,color:N.ink,fontSize:15,fontFamily:"'DM Serif Display',serif",fontWeight:400}}>{role.name}</h3>
+                  <h3 style={{margin:0,color:N.ink,fontSize:20,fontFamily:"'Cormorant Garamond',serif",fontWeight:300,letterSpacing:"-0.2px"}}>{role.name}</h3>
                   <Mark color={role.color}>{role.title}</Mark>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
@@ -521,7 +664,7 @@ function App() {
 
             <Card style={{background:B.navy,marginBottom:16}}>
               <Sub style={{marginBottom:8,color:"rgba(255,255,255,0.5)"}}>The EL Committee Mission</Sub>
-              <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",lineHeight:1.85,fontStyle:"italic",fontFamily:"'DM Serif Display',serif",fontSize:16,fontWeight:400}}>
+              <p style={{fontSize:18,color:"rgba(255,255,255,0.85)",lineHeight:1.75,fontStyle:"italic",fontFamily:"'Cormorant Garamond',serif",fontWeight:300}}>
                 "The mission of the Emerging Leaders Committee is to create and foster a vibrant community for professionals entering the Pharma industry. By working with seasoned professionals from across the industry, we are uniquely positioned to empower the next generation of leaders by providing them with the educational resources, mentorship, and networking opportunities they need to excel."
               </p>
             </Card>
@@ -766,7 +909,7 @@ function App() {
               <Sub style={{marginBottom:8,color:"rgba(255,255,255,0.5)"}}>The One-Page Corporate Ask Sheet</Sub>
               <p style={{fontSize:12,color:"rgba(255,255,255,0.5)",marginBottom:14}}>This is the leave-behind. One page. Clean enough to forward internally. Adapt as needed per company.</p>
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:8,padding:"18px 20px",fontSize:13,lineHeight:1.9,color:"rgba(255,255,255,0.8)"}}>
-                <div style={{fontWeight:700,color:"#fff",marginBottom:12,fontSize:14,fontFamily:"'DM Serif Display',serif"}}>ISPE Delaware Valley Chapter — Partner With Us</div>
+                <div style={{fontWeight:300,color:"#fff",marginBottom:12,fontSize:22,fontFamily:"'Cormorant Garamond',serif",letterSpacing:"-0.3px"}}>ISPE Delaware Valley Chapter — Partner With Us</div>
                 <strong style={{color:"#fff"}}>Who we are:</strong> The ISPE Delaware Valley Chapter is the professional home for pharmaceutical engineering and life sciences professionals across the Philadelphia region — one of the most pharma-dense areas in the world. Our Emerging Leaders Committee exists specifically to create a vibrant community for professionals entering the industry: connecting them with mentors, education, and each other.<br/><br/>
                 <strong style={{color:"#fff"}}>What we're looking for from you:</strong><br/>
                 We're not asking for a major commitment. We're asking for one of these, starting with whichever is easiest:<br/>
@@ -862,6 +1005,21 @@ function App() {
 }
 
 ReactDOM.render(<App/>, document.getElementById("root"));
+</script>
+
+<script>
+  const siteToggle = document.getElementById('siteNavToggle');
+  const siteMobileNav = document.getElementById('siteNavMobile');
+  siteToggle.addEventListener('click', () => {
+    siteToggle.classList.toggle('open');
+    siteMobileNav.classList.toggle('open');
+  });
+  siteMobileNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      siteToggle.classList.remove('open');
+      siteMobileNav.classList.remove('open');
+    });
+  });
 </script>
 </body>
 </html>
